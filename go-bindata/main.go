@@ -77,6 +77,24 @@ func parseArgs() *bindata.Config {
 		c.Input[i] = parseInput(flag.Arg(i))
 	}
 
+	// Change pkg to containing directory of output. If output flag is set and package flag is not.
+	pkgSet := false
+	outputSet := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == "pkg" {
+			pkgSet = true
+		}
+		if f.Name == "o" {
+			outputSet = true
+		}
+	})
+	if outputSet && !pkgSet {
+		pkg := filepath.Base(filepath.Dir(c.Output))
+		if pkg != "." && pkg != "/" {
+			c.Package = pkg
+		}
+	}
+
 	return c
 }
 
