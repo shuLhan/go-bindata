@@ -53,7 +53,10 @@ func (root *assetTree) funcOrNil() string {
 }
 
 func (root *assetTree) writeGoMap(w io.Writer, nident int) {
-	fmt.Fprintf(w, "&bintree{%s, map[string]*bintree{", root.funcOrNil())
+	if nident == 0 {
+		io.WriteString(w, "&bintree")
+	}
+	fmt.Fprintf(w, "{%s, map[string]*bintree{", root.funcOrNil())
 
 	if len(root.Children) > 0 {
 		io.WriteString(w, "\n")
@@ -87,6 +90,7 @@ func (root *assetTree) WriteAsGoMap(w io.Writer) error {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = `)
 	root.writeGoMap(w, 0)
 	return err
