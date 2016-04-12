@@ -140,6 +140,10 @@ type Config struct {
 	//
 	// This parameter can be provided multiple times.
 	Ignore []*regexp.Regexp
+
+	// MD5Checksum is a flag that, when set to true, indicates to calculate
+	// MD5 checksums for files.
+	MD5Checksum bool
 }
 
 // NewConfig returns a default configuration struct.
