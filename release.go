@@ -7,6 +7,7 @@ package bindata
 import (
 	"bytes"
 	"compress/gzip"
+	"crypto/md5"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -214,14 +215,20 @@ func header_uncompressed_memcopy(w io.Writer) error {
 func header_release_common(w io.Writer) error {
 	_, err := fmt.Fprintf(w, `type asset struct {
 	bytes []byte
-	info  os.FileInfo
+	info  fileInfoEx
+}
+
+type fileInfoEx interface {
+	os.FileInfo
+	MD5Checksum() string
 }
 
 type bindataFileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
+	name        string
+	size        int64
+	mode        os.FileMode
+	modTime     time.Time
+	md5checksum string
 }
 
 func (fi bindataFileInfo) Name() string {
@@ -235,6 +242,9 @@ func (fi bindataFileInfo) Mode() os.FileMode {
 }
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
+}
+func (fi bindataFileInfo) MD5Checksum() string {
+	return fi.md5checksum
 }
 func (fi bindataFileInfo) IsDir() bool {
 	return false
@@ -371,17 +381,30 @@ func asset_release_common(w io.Writer, c *Config, asset *Asset) error {
 	if c.ModTime > 0 {
 		modTime = c.ModTime
 	}
+
+	var md5checksum string
+	if c.MD5Checksum {
+		buf, err := ioutil.ReadFile(asset.Path)
+		if err != nil {
+			return err
+		}
+		h := md5.New()
+		if _, err := h.Write(buf); err != nil {
+			return err
+		}
+		md5checksum = fmt.Sprintf("%x", h.Sum(nil))
+	}
 	_, err = fmt.Fprintf(w, `func %s() (*asset, error) {
 	bytes, err := %sBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: %q, size: %d, mode: os.FileMode(%d), modTime: time.Unix(%d, 0)}
+	info := bindataFileInfo{name: %q, size: %d, md5checksum: %q, mode: os.FileMode(%d), modTime: time.Unix(%d, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-`, asset.Func, asset.Func, asset.Name, size, mode, modTime)
+`, asset.Func, asset.Func, asset.Name, size, md5checksum, mode, modTime)
 	return err
 }
