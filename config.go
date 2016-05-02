@@ -42,17 +42,17 @@ type Config struct {
 	// working directory.
 	Output string
 
-	// Prefix defines a path prefix which should be stripped from all
-	// file names when generating the keys in the table of contents.
-	// For example, running without the `-prefix` flag, we get:
+	// Prefix defines a regular expression which should used to strip
+	// substrings from all file names when generating the keys in the table of
+	// contents.  For example, running without the `-prefix` flag, we get:
 	//
 	// 	$ go-bindata /path/to/templates
 	// 	go_bindata["/path/to/templates/foo.html"] = _path_to_templates_foo_html
 	//
-	// Running with the `-prefix` flag, we get:
+	//	Running with the `-prefix` flag, we get:
 	//
-	// 	$ go-bindata -prefix "/path/to/" /path/to/templates/foo.html
-	// 	go_bindata["templates/foo.html"] = templates_foo_html
+	//	$ go-bindata -prefix "/.*/some/" /a/path/to/some/templates/
+	//	_bindata["templates/foo.html"] = templates_foo_html
 	Prefix *regexp.Regexp
 
 	// NoMemCopy will alter the way the output file is generated.
