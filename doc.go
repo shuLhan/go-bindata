@@ -95,12 +95,13 @@ The default behaviour of the program is to use compression.
 
 Path prefix stripping
 
-The keys used in the `_bindata` map are the same as the input file name
-passed to `go-bindata`. This includes the path. In most cases, this is not
-desireable, as it puts potentially sensitive information in your code base.
-For this purpose, the tool supplies another command line flag `-prefix`.
-This accepts a portion of a path name, which should be stripped off from
-the map keys and function names.
+The keys used in the `_bindata` map are the same as the input file name passed
+to `go-bindata`. This includes the path. In most cases, this is not desireable,
+as it puts potentially sensitive information in your code base.  For this
+purpose, the tool supplies another command line flag `-prefix`.  This accepts a
+[regular expression](https://github.com/google/re2/wiki/Syntax) string, which
+will be used to match a portion of the map keys and function names that should
+be stripped out.
 
 For example, running without the `-prefix` flag, we get:
 
@@ -110,7 +111,7 @@ For example, running without the `-prefix` flag, we get:
 
 Running with the `-prefix` flag, we get:
 
-	$ go-bindata -prefix "/path/to/" /path/to/templates/
+	$ go-bindata -prefix "/.*\/some/" /a/path/to/some/templates/
 
 	_bindata["templates/foo.html"] = templates_foo_html
 
