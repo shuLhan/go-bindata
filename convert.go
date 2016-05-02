@@ -119,13 +119,8 @@ func (v ByName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
 // findFiles recursively finds all the file paths in the given directory tree.
 // They are added to the given map as keys. Values will be safe function names
 // for each file, which will be used when generating the output code.
-func findFiles(dir, prefix string, recursive bool, toc *[]Asset, ignore []*regexp.Regexp, knownFuncs map[string]int, visitedPaths map[string]bool) error {
+func findFiles(dir string, prefix *regexp.Regexp, recursive bool, toc *[]Asset, ignore []*regexp.Regexp, knownFuncs map[string]int, visitedPaths map[string]bool) error {
 	dirpath := dir
-	if len(prefix) > 0 {
-		dirpath, _ = filepath.Abs(dirpath)
-		prefix, _ = filepath.Abs(prefix)
-		prefix = filepath.ToSlash(prefix)
-	}
 
 	fi, err := os.Stat(dirpath)
 	if err != nil {
@@ -195,8 +190,8 @@ func findFiles(dir, prefix string, recursive bool, toc *[]Asset, ignore []*regex
 			continue
 		}
 
-		if strings.HasPrefix(asset.Name, prefix) {
-			asset.Name = asset.Name[len(prefix):]
+		if prefix != nil && prefix.MatchString(asset.Name) {
+			asset.Name = prefix.ReplaceAllString(asset.Name, "")
 		} else {
 			asset.Name = filepath.Join(dir, file.Name())
 		}
