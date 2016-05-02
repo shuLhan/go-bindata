@@ -32,6 +32,7 @@ func main() {
 // any of the command line options are incorrect.
 func parseArgs() *bindata.Config {
 	var version bool
+	var rawPrefix string
 
 	c := bindata.NewConfig()
 
@@ -43,7 +44,6 @@ func parseArgs() *bindata.Config {
 	flag.BoolVar(&c.Debug, "debug", c.Debug, "Do not embed the assets, but provide the embedding API. Contents will still be loaded from disk.")
 	flag.BoolVar(&c.Dev, "dev", c.Dev, "Similar to debug, but does not emit absolute paths. Expects a rootDir variable to already exist in the generated code's package.")
 	flag.StringVar(&c.Tags, "tags", c.Tags, "Optional set of build tags to include.")
-	flag.StringVar(&c.Prefix, "prefix", c.Prefix, "Optional path prefix to strip off asset names.")
 	flag.StringVar(&c.Package, "pkg", c.Package, "Package name to use in the generated code.")
 	flag.BoolVar(&c.NoMemCopy, "nomemcopy", c.NoMemCopy, "Use a .rodata hack to get rid of unnecessary memcopies. Refer to the documentation to see what implications this carries.")
 	flag.BoolVar(&c.NoCompress, "nocompress", c.NoCompress, "Assets will *not* be GZIP compressed when this flag is specified.")
@@ -51,6 +51,7 @@ func parseArgs() *bindata.Config {
 	flag.BoolVar(&c.MD5Checksum, "md5checksum", c.MD5Checksum, "MD5 checksums will be calculated for assets.")
 	flag.UintVar(&c.Mode, "mode", c.Mode, "Optional file mode override for all files.")
 	flag.Int64Var(&c.ModTime, "modtime", c.ModTime, "Optional modification unix timestamp override for all files.")
+	flag.StringVar(&rawPrefix, "prefix", "", "Optional path prefix to strip off asset names.")
 	flag.StringVar(&c.Output, "o", c.Output, "Optional name of the output file to be generated.")
 	flag.BoolVar(&version, "version", false, "Displays version information.")
 
@@ -58,6 +59,17 @@ func parseArgs() *bindata.Config {
 	flag.Var((*AppendSliceValue)(&ignore), "ignore", "Regex pattern to ignore")
 
 	flag.Parse()
+
+	if rawPrefix != "" {
+		var err error
+		c.Prefix, err = regexp.Compile(rawPrefix)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to understand -prefix regex pattern.\n")
+			os.Exit(1)
+		}
+	} else {
+		c.Prefix = nil
+	}
 
 	patterns := make([]*regexp.Regexp, 0)
 	for _, pattern := range ignore {
