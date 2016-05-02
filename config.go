@@ -53,7 +53,7 @@ type Config struct {
 	//
 	// 	$ go-bindata -prefix "/path/to/" /path/to/templates/foo.html
 	// 	go_bindata["templates/foo.html"] = templates_foo_html
-	Prefix string
+	Prefix *regexp.Regexp
 
 	// NoMemCopy will alter the way the output file is generated.
 	//
