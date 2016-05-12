@@ -197,14 +197,16 @@ func findFiles(dir, prefix string, recursive bool, toc *[]Asset, ignore []*regex
 
 		if strings.HasPrefix(asset.Name, prefix) {
 			asset.Name = asset.Name[len(prefix):]
-		} else {
+		} else if strings.HasSuffix(dir, file.Name()) {
+			// Issue 110: dir is a full path, including
+			// the file name (minus the basedir), so this
+			// is what we have to use.
 			asset.Name = dir
-			// Note that 'dir' already contains the full
-			// path name (minus the basedir).  Joining the
-			// file.Name() to that generates a broken path
-			// where the last element is duplicated,
-			// i.e. a path like "foo/bar" becomes
-			// "foo/bar/bar", which is a bit of a snafu ;)
+		} else {
+			// Issue 110: dir is just that, a plain
+			// directory, so we have to add the file's
+			// name to it to form the full asset path.
+			asset.Name = filepath.Join(dir, file.Name())
 		}
 
 		// If we have a leading slash, get rid of it.
