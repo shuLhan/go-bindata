@@ -198,7 +198,13 @@ func findFiles(dir, prefix string, recursive bool, toc *[]Asset, ignore []*regex
 		if strings.HasPrefix(asset.Name, prefix) {
 			asset.Name = asset.Name[len(prefix):]
 		} else {
-			asset.Name = filepath.Join(dir, file.Name())
+			asset.Name = dir
+			// Note that 'dir' already contains the full
+			// path name (minus the basedir).  Joining the
+			// file.Name() to that generates a broken path
+			// where the last element is duplicated,
+			// i.e. a path like "foo/bar" becomes
+			// "foo/bar/bar", which is a bit of a snafu ;)
 		}
 
 		// If we have a leading slash, get rid of it.
