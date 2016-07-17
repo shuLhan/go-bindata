@@ -18,7 +18,8 @@ const (
 // revision part of the program version.
 // This will be set automatically at build time like so:
 //
-//     go build -ldflags "-X main.AppVersionRev `date -u +%s`"
+//     go build -ldflags "-X main.AppVersionRev `date -u +%s`" (go version < 1.5)
+//     go build -ldflags "-X main.AppVersionRev=`date -u +%s`" (go version >= 1.5)
 var AppVersionRev string
 
 func Version() string {
