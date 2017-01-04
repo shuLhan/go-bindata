@@ -93,7 +93,8 @@ func TestParseArgs(t *testing.T) {
 			Input: []bindata.InputConfig{{
 				Path: argInputPath,
 			}},
-			Ignore: defConfig.Ignore,
+			Ignore:  defConfig.Ignore,
+			Include: defConfig.Include,
 		},
 	}, {
 		desc: `With "-pkg ` + argPkg + `"`,
@@ -108,7 +109,8 @@ func TestParseArgs(t *testing.T) {
 			Input: []bindata.InputConfig{{
 				Path: argInputPath,
 			}},
-			Ignore: defConfig.Ignore,
+			Ignore:  defConfig.Ignore,
+			Include: defConfig.Include,
 		},
 	}, {
 		desc: `With "-o ` + argOutFile + `" (package name should be "` + argOutPkg + `")`,
@@ -123,7 +125,8 @@ func TestParseArgs(t *testing.T) {
 			Input: []bindata.InputConfig{{
 				Path: argInputPath,
 			}},
-			Ignore: defConfig.Ignore,
+			Ignore:  defConfig.Ignore,
+			Include: defConfig.Include,
 		},
 	}, {
 
@@ -140,7 +143,8 @@ func TestParseArgs(t *testing.T) {
 			Input: []bindata.InputConfig{{
 				Path: argInputPath,
 			}},
-			Ignore: defConfig.Ignore,
+			Ignore:  defConfig.Ignore,
+			Include: defConfig.Include,
 		},
 	}}
 

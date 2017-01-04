@@ -31,7 +31,7 @@ func Translate(c *Config) error {
 	var visitedPaths = make(map[string]bool)
 	// Locate all the assets.
 	for _, input := range c.Input {
-		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc, c.Ignore, knownFuncs, visitedPaths)
+		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc, c.Ignore, c.Include, knownFuncs, visitedPaths)
 		if err != nil {
 			return err
 		}
@@ -125,6 +125,7 @@ func findFiles(
 	recursive bool,
 	toc *[]Asset,
 	ignore []*regexp.Regexp,
+	include []*regexp.Regexp,
 	knownFuncs map[string]int,
 	visitedPaths map[string]bool,
 ) (err error) {
@@ -185,6 +186,15 @@ func findFiles(
 				break
 			}
 		}
+
+		for _, re := range include {
+			if re.MatchString(asset.Path) {
+				ignoring = false
+				break
+			}
+			ignoring = true
+		}
+
 		if ignoring {
 			continue
 		}
@@ -193,7 +203,7 @@ func findFiles(
 			if recursive {
 				recursivePath := filepath.Join(dir, file.Name())
 				visitedPaths[asset.Path] = true
-				findFiles(recursivePath, prefix, recursive, toc, ignore, knownFuncs, visitedPaths)
+				findFiles(recursivePath, prefix, recursive, toc, ignore, include, knownFuncs, visitedPaths)
 			}
 			continue
 		}
@@ -212,7 +222,7 @@ func findFiles(
 
 			if _, ok := visitedPaths[linkPath]; !ok {
 				visitedPaths[linkPath] = true
-				findFiles(asset.Path, prefix, recursive, toc, ignore, knownFuncs, visitedPaths)
+				findFiles(asset.Path, prefix, recursive, toc, ignore, include, knownFuncs, visitedPaths)
 			}
 			continue
 		}

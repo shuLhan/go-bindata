@@ -39,14 +39,16 @@ var (
 
 // List of error messages.
 var (
-	ErrInvalidIgnoreRegex = errors.New("Invalid -ignore regex pattern")
-	ErrInvalidPrefixRegex = errors.New("Invalid -prefix regex pattern")
-	ErrNoInput            = errors.New("Missing <input directories>")
+	ErrInvalidIgnoreRegex  = errors.New("Invalid -ignore regex pattern")
+	ErrInvalidIncludeRegex = errors.New("Invalid -include regex pattern")
+	ErrInvalidPrefixRegex  = errors.New("Invalid -prefix regex pattern")
+	ErrNoInput             = errors.New("Missing <input directories>")
 )
 
 // List of local variables.
 var (
 	argIgnore  []string
+	argInclude []string
 	argVersion bool
 	argPrefix  string
 	cfg        *bindata.Config
@@ -114,6 +116,7 @@ func initArgs() {
 	flag.StringVar(&cfg.Tags, "tags", cfg.Tags, "Optional set of build tags to include.")
 	flag.UintVar(&cfg.Mode, "mode", cfg.Mode, "Optional file mode override for all files.")
 	flag.Var((*AppendSliceValue)(&argIgnore), "ignore", "Regex pattern to ignore")
+	flag.Var((*AppendSliceValue)(&argInclude), "include", "Regex pattern to include")
 }
 
 //
@@ -147,6 +150,11 @@ func parseArgs() (err error) {
 	}
 
 	err = parseIgnore()
+	if err != nil {
+		return
+	}
+
+	err = parseInclude()
 	if err != nil {
 		return
 	}
@@ -185,6 +193,21 @@ func parseIgnore() (err error) {
 		}
 
 		cfg.Ignore = append(cfg.Ignore, ignoreVal)
+	}
+
+	return
+}
+
+func parseInclude() (err error) {
+	var includeVal *regexp.Regexp
+
+	for _, pattern := range argInclude {
+		includeVal, err = regexp.Compile(pattern)
+		if err != nil {
+			return ErrInvalidIncludeRegex
+		}
+
+		cfg.Include = append(cfg.Include, includeVal)
 	}
 
 	return
