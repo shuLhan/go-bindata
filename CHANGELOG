@@ -1,0 +1,26 @@
+# v3.1.0
+
+## New Features
+
+* @apvail 8f5f6db - Alter `-prefix` to Use Regular Expressions instead of just
+  strings
+* @akutz 9308d8f - Added MD5 Checksum Support
+* @fridolin-koch 468373d - Use os.PathError for more information regarding the
+  error
+* @baruchlubinsky 4671a58 - Change default package to containing folder of
+  output
+
+## Enhancements
+
+* @lebauce 89e7c37 - Make generated code pass gofmt -s
+* @andyxning fb998d9- update build info with newer golang
+* @kevinburke 7e5ef26 - Simplify RestoreAsset
+* @spencerhakim
+  * accfe6a - Break binary data up into multiple lines
+  * 32b0afc - Add .editorconfig
+
+## Bug Fixes
+
+* @hemc4 db443d7 - Remove `go vet` from dependency
+* @andreas-kupries b7d2e98 - Fix duplication of the last path element for paths
+  which do not have the -prefix to strip
