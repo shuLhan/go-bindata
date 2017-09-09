@@ -238,18 +238,19 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
-	"in": &bintree{nil, map[string]*bintree{
-		"a": &bintree{nil, map[string]*bintree{
-			"test.asset": &bintree{inATestAsset, map[string]*bintree{}},
+	"in": {nil, map[string]*bintree{
+		"a": {nil, map[string]*bintree{
+			"test.asset": {inATestAsset, map[string]*bintree{}},
 		}},
-		"b": &bintree{nil, map[string]*bintree{
-			"test.asset": &bintree{inBTestAsset, map[string]*bintree{}},
+		"b": {nil, map[string]*bintree{
+			"test.asset": {inBTestAsset, map[string]*bintree{}},
 		}},
-		"c": &bintree{nil, map[string]*bintree{
-			"test.asset": &bintree{inCTestAsset, map[string]*bintree{}},
+		"c": {nil, map[string]*bintree{
+			"test.asset": {inCTestAsset, map[string]*bintree{}},
 		}},
-		"test.asset": &bintree{inTestAsset, map[string]*bintree{}},
+		"test.asset": {inTestAsset, map[string]*bintree{}},
 	}},
 }}
 
@@ -295,4 +296,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
