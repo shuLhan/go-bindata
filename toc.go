@@ -152,6 +152,10 @@ func writeTOC(w io.Writer, toc []Asset) error {
 	}
 
 	for i := range toc {
+		if i != 0 {
+			// Newlines between elements make gofmt happy.
+			w.Write([]byte{'\n'})
+		}
 		err = writeTOCAsset(w, &toc[i])
 		if err != nil {
 			return err
