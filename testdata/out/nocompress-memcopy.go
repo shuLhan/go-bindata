@@ -131,7 +131,7 @@ func Asset(name string) ([]byte, error) {
 		}
 		return a.bytes, nil
 	}
-	return nil, fmt.Errorf("Asset %s not found", name)
+	return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
 }
 
 // MustAsset is like Asset but panics when Asset would return an error.
@@ -157,7 +157,7 @@ func AssetInfo(name string) (os.FileInfo, error) {
 		}
 		return a.info, nil
 	}
-	return nil, fmt.Errorf("AssetInfo %s not found", name)
+	return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
 }
 
 // AssetNames returns the names of the assets.
@@ -198,12 +198,12 @@ func AssetDir(name string) ([]string, error) {
 		for _, p := range pathList {
 			node = node.Children[p]
 			if node == nil {
-				return nil, fmt.Errorf("Asset %s not found", name)
+				return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
 			}
 		}
 	}
 	if node.Func != nil {
-		return nil, fmt.Errorf("Asset %s not found", name)
+		return nil, &os.PathError{Op: "open", Path: name, Err: os.ErrNotExist}
 	}
 	rv := make([]string, 0, len(node.Children))
 	for childName := range node.Children {
