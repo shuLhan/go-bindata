@@ -18,14 +18,20 @@ import (
 )
 type asset struct {
 	bytes []byte
-	info  os.FileInfo
+	info  fileInfoEx
+}
+
+type fileInfoEx interface {
+	os.FileInfo
+	MD5Checksum() string
 }
 
 type bindataFileInfo struct {
-	name    string
-	size    int64
-	mode    os.FileMode
-	modTime time.Time
+	name        string
+	size        int64
+	mode        os.FileMode
+	modTime     time.Time
+	md5checksum string
 }
 
 func (fi bindataFileInfo) Name() string {
@@ -39,6 +45,9 @@ func (fi bindataFileInfo) Mode() os.FileMode {
 }
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
+}
+func (fi bindataFileInfo) MD5Checksum() string {
+	return fi.md5checksum
 }
 func (fi bindataFileInfo) IsDir() bool {
 	return false
@@ -60,7 +69,7 @@ func inATestAsset() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "in/a/test.asset", size: 15, mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
+	info := bindataFileInfo{name: "in/a/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -78,7 +87,7 @@ func inBTestAsset() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "in/b/test.asset", size: 15, mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
+	info := bindataFileInfo{name: "in/b/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -96,7 +105,7 @@ func inCTestAsset() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "in/c/test.asset", size: 15, mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
+	info := bindataFileInfo{name: "in/c/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -114,7 +123,7 @@ func inTestAsset() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "in/test.asset", size: 15, mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
+	info := bindataFileInfo{name: "in/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
