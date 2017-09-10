@@ -128,9 +128,10 @@ func TestParseArgs(t *testing.T) {
 		flag.CommandLine = flag.NewFlagSet(test.args[0],
 			flag.ExitOnError)
 
-		got := parseArgs()
+		initArgs()
+		parseArgs()
 
-		assert(t, test.expConfig, got, true)
+		assert(t, test.expConfig, cfg, true)
 	}
 }
 

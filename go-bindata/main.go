@@ -15,69 +15,80 @@ import (
 	"github.com/shuLhan/go-bindata"
 )
 
-func main() {
-	cfg := parseArgs()
-	err := bindata.Translate(cfg)
+var (
+	argIgnore  []string
+	argVersion bool
+	argPrefix  string
+	cfg        *bindata.Config
+)
 
+func main() {
+	initArgs()
+
+	parseArgs()
+
+	err := bindata.Translate(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "bindata: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-// parseArgs create s a new, filled configuration instance
-// by reading and parsing command line options.
 //
-// This function exits the program with an error, if
-// any of the command line options are incorrect.
-func parseArgs() *bindata.Config {
-	var version bool
-	var rawPrefix string
-
-	c := bindata.NewConfig()
+// initArgs will initialize all command line arguments.
+//
+func initArgs() {
+	cfg = bindata.NewConfig()
 
 	flag.Usage = func() {
 		fmt.Printf("Usage: %s [options] <input directories>\n\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 
-	flag.BoolVar(&c.Debug, "debug", c.Debug, "Do not embed the assets, but provide the embedding API. Contents will still be loaded from disk.")
-	flag.BoolVar(&c.Dev, "dev", c.Dev, "Similar to debug, but does not emit absolute paths. Expects a rootDir variable to already exist in the generated code's package.")
-	flag.StringVar(&c.Tags, "tags", c.Tags, "Optional set of build tags to include.")
-	flag.StringVar(&c.Package, "pkg", c.Package, "Package name to use in the generated code.")
-	flag.BoolVar(&c.NoMemCopy, "nomemcopy", c.NoMemCopy, "Use a .rodata hack to get rid of unnecessary memcopies. Refer to the documentation to see what implications this carries.")
-	flag.BoolVar(&c.NoCompress, "nocompress", c.NoCompress, "Assets will *not* be GZIP compressed when this flag is specified.")
-	flag.BoolVar(&c.NoMetadata, "nometadata", c.NoMetadata, "Assets will not preserve size, mode, and modtime info.")
-	flag.BoolVar(&c.MD5Checksum, "md5checksum", c.MD5Checksum, "MD5 checksums will be calculated for assets.")
-	flag.UintVar(&c.Mode, "mode", c.Mode, "Optional file mode override for all files.")
-	flag.Int64Var(&c.ModTime, "modtime", c.ModTime, "Optional modification unix timestamp override for all files.")
-	flag.StringVar(&rawPrefix, "prefix", "", "Optional path prefix to strip off asset names.")
-	flag.StringVar(&c.Output, "o", c.Output, "Optional name of the output file to be generated.")
-	flag.BoolVar(&version, "version", false, "Displays version information.")
+	flag.BoolVar(&argVersion, "version", false, "Displays version information.")
+	flag.BoolVar(&cfg.Debug, "debug", cfg.Debug, "Do not embed the assets, but provide the embedding API. Contents will still be loaded from disk.")
+	flag.BoolVar(&cfg.Dev, "dev", cfg.Dev, "Similar to debug, but does not emit absolute paths. Expects a rootDir variable to already exist in the generated code's package.")
+	flag.BoolVar(&cfg.MD5Checksum, "md5checksum", cfg.MD5Checksum, "MD5 checksums will be calculated for assets.")
+	flag.BoolVar(&cfg.NoCompress, "nocompress", cfg.NoCompress, "Assets will *not* be GZIP compressed when this flag is specified.")
+	flag.BoolVar(&cfg.NoMemCopy, "nomemcopy", cfg.NoMemCopy, "Use a .rodata hack to get rid of unnecessary memcopies. Refer to the documentation to see what implications this carries.")
+	flag.BoolVar(&cfg.NoMetadata, "nometadata", cfg.NoMetadata, "Assets will not preserve size, mode, and modtime info.")
+	flag.Int64Var(&cfg.ModTime, "modtime", cfg.ModTime, "Optional modification unix timestamp override for all files.")
+	flag.StringVar(&argPrefix, "prefix", "", "Optional path prefix to strip off asset names.")
+	flag.StringVar(&cfg.Output, "o", cfg.Output, "Optional name of the output file to be generated.")
+	flag.StringVar(&cfg.Package, "pkg", cfg.Package, "Package name to use in the generated code.")
+	flag.StringVar(&cfg.Tags, "tags", cfg.Tags, "Optional set of build tags to include.")
+	flag.UintVar(&cfg.Mode, "mode", cfg.Mode, "Optional file mode override for all files.")
+	flag.Var((*AppendSliceValue)(&argIgnore), "ignore", "Regex pattern to ignore")
+}
 
-	ignore := make([]string, 0)
-	flag.Var((*AppendSliceValue)(&ignore), "ignore", "Regex pattern to ignore")
-
+//
+// parseArgs creates a new, filled configuration instance by reading and parsing
+// command line options.
+//
+// This function exits the program with an error, if any of the command line
+// options are incorrect.
+//
+func parseArgs() {
 	flag.Parse()
 
-	if rawPrefix != "" {
+	if argPrefix != "" {
 		var err error
-		c.Prefix, err = regexp.Compile(rawPrefix)
+		cfg.Prefix, err = regexp.Compile(argPrefix)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to understand -prefix regex pattern.\n")
 			os.Exit(1)
 		}
 	} else {
-		c.Prefix = nil
+		cfg.Prefix = nil
 	}
 
 	patterns := make([]*regexp.Regexp, 0)
-	for _, pattern := range ignore {
+	for _, pattern := range argIgnore {
 		patterns = append(patterns, regexp.MustCompile(pattern))
 	}
-	c.Ignore = patterns
+	cfg.Ignore = patterns
 
-	if version {
+	if argVersion {
 		fmt.Printf("%s\n", Version())
 		os.Exit(0)
 	}
@@ -90,9 +101,9 @@ func parseArgs() *bindata.Config {
 	}
 
 	// Create input configurations.
-	c.Input = make([]bindata.InputConfig, flag.NArg())
-	for i := range c.Input {
-		c.Input[i] = parseInput(flag.Arg(i))
+	cfg.Input = make([]bindata.InputConfig, flag.NArg())
+	for i := range cfg.Input {
+		cfg.Input[i] = parseInput(flag.Arg(i))
 	}
 
 	// Change pkg to containing directory of output. If output flag is set and package flag is not.
@@ -107,13 +118,11 @@ func parseArgs() *bindata.Config {
 		}
 	})
 	if outputSet && !pkgSet {
-		pkg := filepath.Base(filepath.Dir(c.Output))
+		pkg := filepath.Base(filepath.Dir(cfg.Output))
 		if pkg != "." && pkg != "/" {
-			c.Package = pkg
+			cfg.Package = pkg
 		}
 	}
-
-	return c
 }
 
 //
