@@ -3,7 +3,7 @@
 // http://creativecommons.org/publicdomain/zero/1.0/
 
 /*
-Package bindata converts any file into managable Go source code. Useful for
+Package bindata converts any file into manageable Go source code. Useful for
 embedding binary data into a go program. The file data is optionally gzip
 compressed before being converted to a raw byte slice.
 
@@ -96,7 +96,7 @@ The default behaviour of the program is to use compression.
 Path prefix stripping
 
 The keys used in the `_bindata` map are the same as the input file name passed
-to `go-bindata`. This includes the path. In most cases, this is not desireable,
+to `go-bindata`. This includes the path. In most cases, this is not desirable,
 as it puts potentially sensitive information in your code base.  For this
 purpose, the tool supplies another command line flag `-prefix`.  This accepts a
 [regular expression](https://github.com/google/re2/wiki/Syntax) string, which
