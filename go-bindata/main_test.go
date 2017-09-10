@@ -8,6 +8,7 @@ import (
 	"flag"
 	"os"
 	"reflect"
+	"regexp"
 	"runtime"
 	"testing"
 
@@ -70,8 +71,31 @@ func TestParseArgs(t *testing.T) {
 	tests := []struct {
 		desc      string
 		args      []string
+		expErr    error
 		expConfig *bindata.Config
 	}{{
+		desc: `Without input`,
+		args: []string{
+			"noop",
+		},
+		expErr: ErrNoInput,
+	}, {
+		desc: `With "-prefix prefix/*/to/be/removed ."`,
+		args: []string{
+			"noop",
+			"-prefix", "prefix/*/to/be/removed",
+			".",
+		},
+		expConfig: &bindata.Config{
+			Output:  defConfig.Output,
+			Package: "main",
+			Prefix:  regexp.MustCompile("prefix/*/to/be/removed"),
+			Input: []bindata.InputConfig{{
+				Path: argInputPath,
+			}},
+			Ignore: defConfig.Ignore,
+		},
+	}, {
 		desc: `With "-pkg ` + argPkg + `"`,
 		args: []string{
 			"noop",
@@ -103,7 +127,7 @@ func TestParseArgs(t *testing.T) {
 		},
 	}, {
 
-		desc: `With "-pkg ` + argPkg + ` -o ` + argOutPkg + `" (package name should be ` + argPkg + `)`,
+		desc: `With "-pkg ` + argPkg + ` -o ` + argOutPkg + `" (package name should be "` + argPkg + `")`,
 		args: []string{
 			"noop",
 			"-pkg", argPkg,
@@ -126,10 +150,16 @@ func TestParseArgs(t *testing.T) {
 		os.Args = test.args
 
 		flag.CommandLine = flag.NewFlagSet(test.args[0],
-			flag.ExitOnError)
+			flag.ContinueOnError)
 
 		initArgs()
-		parseArgs()
+
+		gotErr := parseArgs()
+
+		if test.expErr != nil {
+			assert(t, test.expErr, gotErr, true)
+			continue
+		}
 
 		assert(t, test.expConfig, cfg, true)
 	}
