@@ -38,7 +38,7 @@ func printStack() {
 		}
 	}
 
-	os.Stderr.Write(_traces[start:end])
+	lerr.Println(_traces[start:end])
 }
 
 func assert(t *testing.T, exp, got interface{}, equal bool) {
