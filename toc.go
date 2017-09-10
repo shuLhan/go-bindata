@@ -144,6 +144,20 @@ func AssetDir(name string) ([]string, error) {
 	return tree.WriteAsGoMap(w)
 }
 
+//
+// getLongestAssetNameLen will return length of the longest asset name in toc.
+//
+func getLongestAssetNameLen(toc []Asset) (longest int) {
+	for _, asset := range toc {
+		lenName := len(asset.Name)
+		if lenName > longest {
+			longest = lenName
+		}
+	}
+
+	return
+}
+
 // writeTOC writes the table of contents file.
 func writeTOC(w io.Writer, toc []Asset) error {
 	err := writeTOCHeader(w)
@@ -151,8 +165,10 @@ func writeTOC(w io.Writer, toc []Asset) error {
 		return err
 	}
 
+	longestNameLen := getLongestAssetNameLen(toc)
+
 	for i := range toc {
-		err = writeTOCAsset(w, &toc[i])
+		err = writeTOCAsset(w, &toc[i], longestNameLen)
 		if err != nil {
 			return err
 		}
@@ -220,9 +236,18 @@ var _bindata = map[string]func() (*asset, error){
 }
 
 // writeTOCAsset write a TOC entry for the given asset.
-func writeTOCAsset(w io.Writer, asset *Asset) error {
-	_, err := fmt.Fprintf(w, "\t%q: %s,\n", asset.Name, asset.Func)
-	return err
+func writeTOCAsset(w io.Writer, asset *Asset, longestNameLen int) (err error) {
+	toWrite := " "
+
+	for x := 0; x < longestNameLen-len(asset.Name); x++ {
+		toWrite += " "
+	}
+
+	toWrite = "\t\"" + asset.Name + "\":" + toWrite + asset.Func + ",\n"
+
+	_, err = io.WriteString(w, toWrite)
+
+	return
 }
 
 // writeTOCFooter writes the table of contents file footer.
