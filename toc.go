@@ -47,9 +47,9 @@ func ident(w io.Writer, n int) {
 func (root *assetTree) funcOrNil() string {
 	if root.Asset.Func == "" {
 		return "nil"
-	} else {
-		return root.Asset.Func
 	}
+
+	return root.Asset.Func
 }
 
 func (root *assetTree) writeGoMap(w io.Writer, nident int) {
