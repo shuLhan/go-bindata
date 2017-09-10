@@ -133,3 +133,32 @@ func TestParseArgs(t *testing.T) {
 		assert(t, test.expConfig, got, true)
 	}
 }
+
+func TestParseInput(t *testing.T) {
+	tests := []struct {
+		desc string
+		path string
+		exp  bindata.InputConfig
+	}{{
+		desc: `With suffix /...`,
+		path: `./...`,
+		exp: bindata.InputConfig{
+			Path:      `.`,
+			Recursive: true,
+		},
+	}, {
+		desc: `Without suffix /...`,
+		path: `.`,
+		exp: bindata.InputConfig{
+			Path: `.`,
+		},
+	}}
+
+	for _, test := range tests {
+		t.Log(test.desc)
+
+		got := parseInput(test.path)
+
+		assert(t, test.exp, got, true)
+	}
+}
