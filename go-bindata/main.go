@@ -10,12 +10,28 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/shuLhan/go-bindata"
 )
 
+const (
+	appName         = "go-bindata"
+	appVersionMajor = 3
+	appVersionMinor = 1
+)
+
 var (
+	//
+	// AppVersionRev part of the program version.
+	//
+	// This will be set automatically at build time like so:
+	//
+	//     go build -ldflags "-X main.AppVersionRev `date -u +%s`" (go version < 1.5)
+	//     go build -ldflags "-X main.AppVersionRev=`date -u +%s`" (go version >= 1.5)
+	AppVersionRev string
+
 	argIgnore  []string
 	argVersion bool
 	argPrefix  string
@@ -32,6 +48,18 @@ func main() {
 		fmt.Fprintf(os.Stderr, "bindata: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func version() {
+	if len(AppVersionRev) == 0 {
+		AppVersionRev = "0"
+	}
+
+	fmt.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,
+		appVersionMinor, AppVersionRev, runtime.Version())
+	fmt.Println("Copyright (c) 2010-2015, Jim Teeuwen.")
+
+	os.Exit(0)
 }
 
 //
@@ -65,11 +93,19 @@ func initArgs() {
 // parseArgs creates a new, filled configuration instance by reading and parsing
 // command line options.
 //
+// The order of parsing is important to minimize unneeded processing, i.e.,
+// checking for input path should be first, followed by version, and then
+// everything else.
+//
 // This function exits the program with an error, if any of the command line
 // options are incorrect.
 //
 func parseArgs() {
 	flag.Parse()
+
+	if argVersion {
+		version()
+	}
 
 	if argPrefix != "" {
 		var err error
@@ -87,11 +123,6 @@ func parseArgs() {
 		patterns = append(patterns, regexp.MustCompile(pattern))
 	}
 	cfg.Ignore = patterns
-
-	if argVersion {
-		fmt.Printf("%s\n", Version())
-		os.Exit(0)
-	}
 
 	// Make sure we have input paths.
 	if flag.NArg() == 0 {
