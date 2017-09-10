@@ -10,6 +10,9 @@ import (
 
 const lowerHex = "0123456789abcdef"
 
+//
+// StringWriter define a writer to write content of file.
+//
 type StringWriter struct {
 	io.Writer
 	c int
@@ -30,7 +33,7 @@ func (w *StringWriter) Write(p []byte) (n int, err error) {
 		w.c++
 
 		// 28 fits nicely with tab width at 4 and a 120 char line limit
-		if w.c % 28 == 0 {
+		if w.c%28 == 0 {
 			w.Writer.Write([]byte("\" +\n\t\""))
 		}
 	}

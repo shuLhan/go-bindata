@@ -15,6 +15,9 @@ var (
 	space      = []byte{' '}
 )
 
+//
+// ByteWriter define a writer to write content of file.
+//
 type ByteWriter struct {
 	io.Writer
 	c int
