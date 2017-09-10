@@ -19,7 +19,9 @@ func TestFindFiles(t *testing.T) {
 	var toc []Asset
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	err := findFiles("testdata/dupname", "testdata/dupname", true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	prefix := regexp.MustCompile("testdata/dupname")
+
+	err := findFiles("testdata/dupname", prefix, true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -34,14 +36,18 @@ func TestFindFilesWithSymlinks(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	err := findFiles("testdata/symlinkSrc", "testdata/symlinkSrc", true, &tocSrc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	prefix := regexp.MustCompile("testdata/symlinkSrc")
+
+	err := findFiles("testdata/symlinkSrc", prefix, true, &tocSrc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
 
 	knownFuncs = make(map[string]int)
 	visitedPaths = make(map[string]bool)
-	err = findFiles("testdata/symlinkParent", "testdata/symlinkParent", true, &tocTarget, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	prefix = regexp.MustCompile("testdata/symlinkParent")
+
+	err = findFiles("testdata/symlinkParent", prefix, true, &tocTarget, []*regexp.Regexp{}, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -49,8 +55,8 @@ func TestFindFilesWithSymlinks(t *testing.T) {
 	if len(tocSrc) != len(tocTarget) {
 		t.Errorf("Symlink source and target should have the same number of assets.  Expected %d got %d", len(tocTarget), len(tocSrc))
 	} else {
-		for i, _ := range tocSrc {
-			targetFunc := strings.TrimPrefix(tocTarget[i].Func, "symlinktarget")
+		for i := range tocSrc {
+			targetFunc := strings.Replace(tocTarget[i].Func, "Symlinktarget", "", -1)
 			targetFunc = strings.ToLower(targetFunc[:1]) + targetFunc[1:]
 			if tocSrc[i].Func != targetFunc {
 				t.Errorf("Symlink source and target produced different function lists.  Expected %s to be %s", targetFunc, tocSrc[i].Func)
@@ -64,7 +70,9 @@ func TestFindFilesWithRecursiveSymlinks(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	err := findFiles("testdata/symlinkRecursiveParent", "testdata/symlinkRecursiveParent", true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	prefix := regexp.MustCompile("testdata/symlinkRecursiveParent")
+
+	err := findFiles("testdata/symlinkRecursiveParent", prefix, true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -79,7 +87,9 @@ func TestFindFilesWithSymlinkedFile(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	err := findFiles("testdata/symlinkFile", "testdata/symlinkFile", true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	prefix := regexp.MustCompile("testdata/symlinkFile")
+
+	err := findFiles("testdata/symlinkFile", prefix, true, &toc, []*regexp.Regexp{}, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
