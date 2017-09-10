@@ -141,7 +141,7 @@ func findFiles(
 
 	fi, err := os.Stat(dirpath)
 	if err != nil {
-		return err
+		return
 	}
 
 	var list []os.FileInfo
@@ -150,17 +150,23 @@ func findFiles(
 		dirpath = filepath.Dir(dirpath)
 		list = []os.FileInfo{fi}
 	} else {
-		visitedPaths[dirpath] = true
-		fd, err := os.Open(dirpath)
-		if err != nil {
-			return err
-		}
+		var fd *os.File
 
-		defer fd.Close()
+		visitedPaths[dirpath] = true
+
+		fd, err = os.Open(dirpath)
+		if err != nil {
+			return
+		}
 
 		list, err = fd.Readdir(0)
 		if err != nil {
-			return err
+			return
+		}
+
+		err = fd.Close()
+		if err != nil {
+			return
 		}
 
 		// Sort to make output stable between invocations
@@ -195,12 +201,12 @@ func findFiles(
 		if file.Mode()&os.ModeSymlink == os.ModeSymlink {
 			var linkPath string
 			if linkPath, err = os.Readlink(asset.Path); err != nil {
-				return err
+				return
 			}
 
 			if !filepath.IsAbs(linkPath) {
 				if linkPath, err = filepath.Abs(dirpath + "/" + linkPath); err != nil {
-					return err
+					return
 				}
 			}
 
@@ -240,7 +246,7 @@ func findFiles(
 		*toc = append(*toc, asset)
 	}
 
-	return nil
+	return
 }
 
 var regFuncName = regexp.MustCompile(`[^a-zA-Z0-9_]`)
