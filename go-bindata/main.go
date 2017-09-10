@@ -50,6 +50,12 @@ func main() {
 	}
 }
 
+func usage() {
+	fmt.Println("Usage: " + appName + " [options] <input directories>\n")
+
+	flag.PrintDefaults()
+}
+
 func version() {
 	if len(AppVersionRev) == 0 {
 		AppVersionRev = "0"
@@ -68,10 +74,7 @@ func version() {
 func initArgs() {
 	cfg = bindata.NewConfig()
 
-	flag.Usage = func() {
-		fmt.Printf("Usage: %s [options] <input directories>\n\n", os.Args[0])
-		flag.PrintDefaults()
-	}
+	flag.Usage = usage
 
 	flag.BoolVar(&argVersion, "version", false, "Displays version information.")
 	flag.BoolVar(&cfg.Debug, "debug", cfg.Debug, "Do not embed the assets, but provide the embedding API. Contents will still be loaded from disk.")
@@ -94,8 +97,9 @@ func initArgs() {
 // command line options.
 //
 // The order of parsing is important to minimize unneeded processing, i.e.,
-// checking for input path should be first, followed by version, and then
-// everything else.
+//
+// (1) checking for version argument must be first,
+// (2) followed by checking input directory argument, and then everything else.
 //
 // This function exits the program with an error, if any of the command line
 // options are incorrect.
@@ -103,8 +107,15 @@ func initArgs() {
 func parseArgs() {
 	flag.Parse()
 
+	// (1)
 	if argVersion {
 		version()
+	}
+
+	// (2)
+	if flag.NArg() == 0 {
+		os.Stderr.WriteString("Missing <input dir>\n\n")
+		flag.Usage()
 	}
 
 	if argPrefix != "" {
@@ -123,13 +134,6 @@ func parseArgs() {
 		patterns = append(patterns, regexp.MustCompile(pattern))
 	}
 	cfg.Ignore = patterns
-
-	// Make sure we have input paths.
-	if flag.NArg() == 0 {
-		fmt.Fprintf(os.Stderr, "Missing <input dir>\n\n")
-		flag.Usage()
-		os.Exit(1)
-	}
 
 	// Create input configurations.
 	cfg.Input = make([]bindata.InputConfig, flag.NArg())
