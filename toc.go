@@ -22,11 +22,11 @@ func newAssetTree() *assetTree {
 	return tree
 }
 
-func (node *assetTree) child(name string) *assetTree {
-	rv, ok := node.Children[name]
+func (root *assetTree) child(name string) *assetTree {
+	rv, ok := root.Children[name]
 	if !ok {
 		rv = newAssetTree()
-		node.Children[name] = rv
+		root.Children[name] = rv
 	}
 	return rv
 }
