@@ -109,7 +109,7 @@ func Translate(c *Config) error {
 	return writeRestore(bfd)
 }
 
-// Implement sort.Interface for []os.FileInfo based on Name()
+// ByName implement sort.Interface for []os.FileInfo based on Name()
 type ByName []os.FileInfo
 
 func (v ByName) Len() int           { return len(v) }
