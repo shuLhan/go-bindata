@@ -361,10 +361,10 @@ func %sBytes() ([]byte, error) {
 	return err
 }
 
-func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) error {
+func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 	fi, err := os.Stat(asset.Path)
 	if err != nil {
-		return err
+		return
 	}
 
 	mode := uint(fi.Mode())
@@ -384,16 +384,20 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) error {
 
 	var md5checksum string
 	if c.MD5Checksum {
-		buf, err := ioutil.ReadFile(asset.Path)
+		var buf []byte
+
+		buf, err = ioutil.ReadFile(asset.Path)
 		if err != nil {
-			return err
+			return
 		}
+
 		h := md5.New()
-		if _, err := h.Write(buf); err != nil {
-			return err
+		if _, err = h.Write(buf); err != nil {
+			return
 		}
 		md5checksum = fmt.Sprintf("%x", h.Sum(nil))
 	}
+
 	_, err = fmt.Fprintf(w, `func %s() (*asset, error) {
 	bytes, err := %sBytes()
 	if err != nil {
@@ -406,5 +410,5 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) error {
 }
 
 `, asset.Func, asset.Func, asset.Name, size, md5checksum, mode, modTime)
-	return err
+	return
 }
