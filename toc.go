@@ -64,7 +64,7 @@ func (root *assetTree) writeGoMap(w io.Writer, nident int) {
 		// Sort to make output stable between invocations
 		filenames := make([]string, len(root.Children))
 		i := 0
-		for filename, _ := range root.Children {
+		for filename := range root.Children {
 			filenames[i] = filename
 			i++
 		}
