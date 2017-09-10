@@ -7,7 +7,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -32,6 +32,9 @@ var (
 	//     go build -ldflags "-X main.AppVersionRev `date -u +%s`" (go version < 1.5)
 	//     go build -ldflags "-X main.AppVersionRev=`date -u +%s`" (go version >= 1.5)
 	AppVersionRev string
+
+	lerr = log.New(os.Stderr, "", 0)
+	lout = log.New(os.Stdout, "", 0)
 )
 
 // List of error messages.
@@ -54,10 +57,10 @@ func main() {
 
 	err := parseArgs()
 	if err != nil {
-		os.Stderr.WriteString(err.Error() + "\n")
+		lerr.Println(err)
 
 		if err == ErrNoInput {
-			os.Stderr.WriteString("\n")
+			lerr.Println()
 			usage()
 		}
 
@@ -66,13 +69,13 @@ func main() {
 
 	err = bindata.Translate(cfg)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "bindata: %v\n", err)
+		lerr.Println("bindata: ", err)
 		os.Exit(1)
 	}
 }
 
 func usage() {
-	fmt.Println("Usage: " + appName + " [options] <input directories>\n")
+	lerr.Println("Usage: " + appName + " [options] <input directories>\n")
 
 	flag.PrintDefaults()
 }
@@ -82,9 +85,9 @@ func version() {
 		AppVersionRev = "0"
 	}
 
-	fmt.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,
+	lout.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,
 		appVersionMinor, AppVersionRev, runtime.Version())
-	fmt.Println("Copyright (c) 2010-2015, Jim Teeuwen.")
+	lout.Println("Copyright (c) 2010-2015, Jim Teeuwen.")
 
 	os.Exit(0)
 }
