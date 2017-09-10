@@ -5,6 +5,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -31,7 +32,17 @@ var (
 	//     go build -ldflags "-X main.AppVersionRev `date -u +%s`" (go version < 1.5)
 	//     go build -ldflags "-X main.AppVersionRev=`date -u +%s`" (go version >= 1.5)
 	AppVersionRev string
+)
 
+// List of error messages.
+var (
+	ErrInvalidIgnoreRegex = errors.New("Invalid -ignore regex pattern")
+	ErrInvalidPrefixRegex = errors.New("Invalid -prefix regex pattern")
+	ErrNoInput            = errors.New("Missing <input directories>")
+)
+
+// List of local variables.
+var (
 	argIgnore  []string
 	argVersion bool
 	argPrefix  string
@@ -41,9 +52,19 @@ var (
 func main() {
 	initArgs()
 
-	parseArgs()
+	err := parseArgs()
+	if err != nil {
+		os.Stderr.WriteString(err.Error() + "\n")
 
-	err := bindata.Translate(cfg)
+		if err == ErrNoInput {
+			os.Stderr.WriteString("\n")
+			usage()
+		}
+
+		os.Exit(2)
+	}
+
+	err = bindata.Translate(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "bindata: %v\n", err)
 		os.Exit(1)
@@ -101,10 +122,10 @@ func initArgs() {
 // (1) checking for version argument must be first,
 // (2) followed by checking input directory argument, and then everything else.
 //
-// This function exits the program with an error, if any of the command line
-// options are incorrect.
+// If no input directory or one of the command line options are incorrect, it
+// will return error.
 //
-func parseArgs() {
+func parseArgs() (err error) {
 	flag.Parse()
 
 	// (1)
@@ -114,26 +135,20 @@ func parseArgs() {
 
 	// (2)
 	if flag.NArg() == 0 {
-		os.Stderr.WriteString("Missing <input dir>\n\n")
-		flag.Usage()
+		return ErrNoInput
 	}
 
-	if argPrefix != "" {
-		var err error
-		cfg.Prefix, err = regexp.Compile(argPrefix)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to understand -prefix regex pattern.\n")
-			os.Exit(1)
-		}
-	} else {
-		cfg.Prefix = nil
+	err = parsePrefix()
+	if err != nil {
+		return
 	}
 
-	patterns := make([]*regexp.Regexp, 0)
-	for _, pattern := range argIgnore {
-		patterns = append(patterns, regexp.MustCompile(pattern))
+	err = parseIgnore()
+	if err != nil {
+		return
 	}
-	cfg.Ignore = patterns
+
+	parseOutputPkg()
 
 	// Create input configurations.
 	cfg.Input = make([]bindata.InputConfig, flag.NArg())
@@ -141,18 +156,55 @@ func parseArgs() {
 		cfg.Input[i] = parseInput(flag.Arg(i))
 	}
 
-	// Change pkg to containing directory of output. If output flag is set and package flag is not.
-	pkgSet := false
-	outputSet := false
+	return
+}
+
+func parsePrefix() (err error) {
+	if len(argPrefix) == 0 {
+		return
+	}
+
+	cfg.Prefix, err = regexp.Compile(argPrefix)
+	if err != nil {
+		return ErrInvalidPrefixRegex
+	}
+
+	return
+}
+
+func parseIgnore() (err error) {
+	var ignoreVal *regexp.Regexp
+
+	for _, pattern := range argIgnore {
+		ignoreVal, err = regexp.Compile(pattern)
+		if err != nil {
+			return ErrInvalidIgnoreRegex
+		}
+
+		cfg.Ignore = append(cfg.Ignore, ignoreVal)
+	}
+
+	return
+}
+
+//
+// parseOutputPkg will change package name to directory of output, only if
+// output flag is set and package flag is not set.
+//
+func parseOutputPkg() {
+	var isPkgSet, isOutputSet bool
+
 	flag.Visit(func(f *flag.Flag) {
 		if f.Name == "pkg" {
-			pkgSet = true
+			isPkgSet = true
+			return
 		}
 		if f.Name == "o" {
-			outputSet = true
+			isOutputSet = true
 		}
 	})
-	if outputSet && !pkgSet {
+
+	if isOutputSet && !isPkgSet {
 		pkg := filepath.Base(filepath.Dir(cfg.Output))
 		if pkg != "." && pkg != "/" {
 			cfg.Package = pkg
