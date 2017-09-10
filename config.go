@@ -175,7 +175,7 @@ func (c *Config) validate() error {
 	if len(c.Output) == 0 {
 		cwd, err := os.Getwd()
 		if err != nil {
-			return fmt.Errorf("Unable to determine current working directory.")
+			return fmt.Errorf("Unable to determine current working directory")
 		}
 
 		c.Output = filepath.Join(cwd, "bindata.go")
@@ -200,7 +200,7 @@ func (c *Config) validate() error {
 	}
 
 	if stat != nil && stat.IsDir() {
-		return fmt.Errorf("Output path is a directory.")
+		return fmt.Errorf("Output path is a directory")
 	}
 
 	return nil
