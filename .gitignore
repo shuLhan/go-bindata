@@ -1,1 +1,6 @@
+cover.html
+cover.out
+go-bindata/cover.out
 go-bindata/go-bindata
+lib.cover.out
+vendor
