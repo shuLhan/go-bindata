@@ -69,7 +69,7 @@ func inATestAsset() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "in/a/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1504869460, 0)}
+	info := bindataFileInfo{name: "in/a/test.asset", size: 15, md5checksum: "", mode: os.FileMode(420), modTime: time.Unix(1505256180, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
