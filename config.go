@@ -139,7 +139,8 @@ type Config struct {
 	// will match any .gitignore file.
 	//
 	// This parameter can be provided multiple times.
-	Ignore []*regexp.Regexp
+	Ignore  []*regexp.Regexp
+	Include []*regexp.Regexp
 
 	// MD5Checksum is a flag that, when set to true, indicates to calculate
 	// MD5 checksums for files.
@@ -155,6 +156,7 @@ func NewConfig() *Config {
 	c.Debug = false
 	c.Output = "./bindata.go"
 	c.Ignore = make([]*regexp.Regexp, 0)
+	c.Include = make([]*regexp.Regexp, 0)
 	return c
 }
 
