@@ -31,14 +31,14 @@ func printStack() {
 
 		lines++
 		if lines == 5 {
-			start = x
+			start = x + 1
 		} else if lines == 7 {
 			end = x + 1
 			break
 		}
 	}
 
-	lerr.Println(_traces[start:end])
+	lerr.Println("!!! ERR " + string(_traces[start:end]))
 }
 
 func assert(t *testing.T, exp, got interface{}, equal bool) {
