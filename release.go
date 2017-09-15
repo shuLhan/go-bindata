@@ -15,7 +15,20 @@ import (
 	"unicode/utf8"
 )
 
-// writeRelease writes the release code file.
+// writeOneFileRelease writes the release code file for each file (when splited file).
+func writeOneFileRelease(w io.Writer, c *Config, a *Asset) error {
+	if err := fileHeader(w); err != nil {
+		return err
+	}
+
+	if err := writeReleaseAsset(w, c, a); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// writeRelease writes the release code file for single file.
 func writeRelease(w io.Writer, c *Config, toc []Asset) error {
 	err := writeReleaseHeader(w, c)
 	if err != nil {
@@ -96,6 +109,16 @@ func sanitize(b []byte) []byte {
 	// I wouldn't bother handling this, but for some insane reason
 	// jquery.js has a BOM somewhere in the middle.)
 	return bytes.Replace(b, []byte("\xEF\xBB\xBF"), []byte("`+\"\\xEF\\xBB\\xBF\"+`"), -1)
+}
+
+func fileHeader(w io.Writer) error {
+	_, err := fmt.Fprintf(w, `import (
+	"os"
+	"time"
+)
+
+`)
+	return err
 }
 
 func headerCompressedNomemcopy(w io.Writer) error {

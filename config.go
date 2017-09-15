@@ -39,7 +39,8 @@ type Config struct {
 
 	// Output defines the output file for the generated code.
 	// If left empty, this defaults to 'bindata.go' in the current
-	// working directory.
+	// working directory and the current directory in case of having true
+	// to `Split` config.
 	Output string
 
 	// Prefix defines a regular expression which should used to strip
@@ -142,6 +143,12 @@ type Config struct {
 	Ignore  []*regexp.Regexp
 	Include []*regexp.Regexp
 
+	// Split the output into several files. Every embedded file is bound into
+	// a specific file, and a common file is also generated containing API and
+	// other common parts.
+	// If true, the output config is a directory and not a file.
+	Split bool
+
 	// MD5Checksum is a flag that, when set to true, indicates to calculate
 	// MD5 checksums for files.
 	MD5Checksum bool
@@ -154,7 +161,6 @@ func NewConfig() *Config {
 	c.NoMemCopy = false
 	c.NoCompress = false
 	c.Debug = false
-	c.Output = "./bindata.go"
 	c.Ignore = make([]*regexp.Regexp, 0)
 	c.Include = make([]*regexp.Regexp, 0)
 	return c
@@ -180,7 +186,11 @@ func (c *Config) validate() error {
 			return fmt.Errorf("Unable to determine current working directory")
 		}
 
-		c.Output = filepath.Join(cwd, "bindata.go")
+		if c.Split {
+			c.Output = cwd
+		} else {
+			c.Output = filepath.Join(cwd, "bindata.go")
+		}
 	}
 
 	stat, err := os.Lstat(c.Output)
@@ -201,8 +211,18 @@ func (c *Config) validate() error {
 		}
 	}
 
-	if stat != nil && stat.IsDir() {
-		return fmt.Errorf("Output path is a directory")
+	if stat != nil {
+		if c.Split {
+			if !stat.IsDir() {
+				return fmt.Errorf("Output path is not a directory")
+
+			}
+		} else {
+			if stat.IsDir() {
+				return fmt.Errorf("Output path is a directory")
+
+			}
+		}
 	}
 
 	return nil
