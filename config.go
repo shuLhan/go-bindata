@@ -5,10 +5,26 @@
 package bindata
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
+)
+
+const (
+	// DefPackageName define default package name.
+	DefPackageName = "main"
+
+	// DefOutputName define default generated file name.
+	DefOutputName = "bindata.go"
+)
+
+// List of errors.
+var (
+	ErrNoInput       = errors.New("No input")
+	ErrNoPackageName = errors.New("Missing package name")
+	ErrCWD           = errors.New("Unable to determine current working directory")
 )
 
 // InputConfig defines options on a asset directory to be convert.
@@ -154,76 +170,104 @@ type Config struct {
 	MD5Checksum bool
 }
 
+//
 // NewConfig returns a default configuration struct.
+//
 func NewConfig() *Config {
 	c := new(Config)
-	c.Package = "main"
-	c.NoMemCopy = false
-	c.NoCompress = false
-	c.Debug = false
+	c.Package = DefPackageName
+	c.Output = DefOutputName
 	c.Ignore = make([]*regexp.Regexp, 0)
 	c.Include = make([]*regexp.Regexp, 0)
 	return c
 }
 
-// validate ensures the config has sane values.
-// Part of which means checking if certain file/directory paths exist.
-func (c *Config) validate() error {
-	if len(c.Package) == 0 {
-		return fmt.Errorf("Missing package name")
-	}
-
+func (c *Config) validateInput() (err error) {
 	for _, input := range c.Input {
-		_, err := os.Lstat(input.Path)
+		_, err = os.Lstat(input.Path)
 		if err != nil {
-			return fmt.Errorf("Failed to stat input path '%s': %v", input.Path, err)
+			return fmt.Errorf("Failed to stat input path '%s': %v",
+				input.Path, err)
 		}
 	}
+	return
+}
 
+//
+// validateOutput will check if output is valid.
+//
+// (1) If output is empty, set the output directory to,
+// (1.1) current working directory if `split` option is used, or
+// (1.2) current working directory with default output file output name.
+// (2) If output is not empty, check the directory and file write status.
+//
+func (c *Config) validateOutput() (err error) {
+	// (1)
 	if len(c.Output) == 0 {
-		cwd, err := os.Getwd()
+		var cwd string
+
+		cwd, err = os.Getwd()
 		if err != nil {
-			return fmt.Errorf("Unable to determine current working directory")
+			return ErrCWD
 		}
 
 		if c.Split {
+			// (1.1)
 			c.Output = cwd
 		} else {
-			c.Output = filepath.Join(cwd, "bindata.go")
+			// (1.2)
+			c.Output = filepath.Join(cwd, DefOutputName)
 		}
+
+		return
 	}
 
-	stat, err := os.Lstat(c.Output)
+	// (2)
+	dir, file := filepath.Split(c.Output)
+
+	err = os.MkdirAll(dir, 0700)
 	if err != nil {
-		if !os.IsNotExist(err) {
-			return fmt.Errorf("Output path: %v", err)
-		}
+		return fmt.Errorf("Create output directory: %v", err)
+	}
 
-		// File does not exist. This is fine, just make
-		// sure the directory it is to be in exists.
-		dir, _ := filepath.Split(c.Output)
-		if dir != "" {
-			err = os.MkdirAll(dir, 0744)
-
-			if err != nil {
-				return fmt.Errorf("Create output directory: %v", err)
-			}
+	if len(file) == 0 {
+		if !c.Split {
+			c.Output = filepath.Join(dir, DefOutputName)
 		}
 	}
 
-	if stat != nil {
-		if c.Split {
-			if !stat.IsDir() {
-				return fmt.Errorf("Output path is not a directory")
+	if !c.Split {
+		var fout *os.File
 
-			}
-		} else {
-			if stat.IsDir() {
-				return fmt.Errorf("Output path is a directory")
-
-			}
+		fout, err = os.Create(c.Output)
+		if err != nil {
+			return
 		}
+
+		fout.Close()
 	}
 
-	return nil
+	return
+}
+
+//
+// validate ensures the config has sane values.
+// Part of which means checking if certain file/directory paths exist.
+//
+func (c *Config) validate() (err error) {
+	if len(c.Package) == 0 {
+		return ErrNoPackageName
+	}
+
+	err = c.validateInput()
+	if err != nil {
+		return
+	}
+
+	err = c.validateOutput()
+	if err != nil {
+		return
+	}
+
+	return
 }
