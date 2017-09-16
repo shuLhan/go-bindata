@@ -79,7 +79,7 @@ lint-errors: $(LINTER_CMD)
 
 lint-all: $(LINTER_CMD)
 	@echo ">>> Run all linters ..."
-	@$(LINTER) ./...
+	@$(LINTER) --exclude="testdata/*" ./...
 
 ##
 ## TEST
