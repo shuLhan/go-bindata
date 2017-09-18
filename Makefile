@@ -65,7 +65,8 @@ distclean: clean
 ##
 
 $(VENDOR_DIR): vendor.deps
-	./.scripts/deps.sh $<
+	@echo ">>> Installing vendor dependencies ..."
+	@./.scripts/deps.sh $<
 
 $(LINTER_CMD): $(VENDOR_DIR)
 
@@ -74,6 +75,7 @@ lint: $(LINTER_CMD)
 	@$(LINTER) --fast ./...
 
 lint-errors: $(LINTER_CMD)
+	@echo ""
 	@echo ">>> Lint errors only ..."
 	@$(LINTER) --fast --errors ./...
 
