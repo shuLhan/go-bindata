@@ -24,7 +24,7 @@ func translateToDir(c *Config, toc []Asset, wd string) error {
 
 func generateCommonFile(c *Config, toc []Asset) error {
 	// Create output file.
-	fd, err := os.Create(filepath.Join(c.Output, "common.go"))
+	fd, err := os.Create(filepath.Join(c.Output, "bindata.go"))
 	if err != nil {
 		return err
 	}

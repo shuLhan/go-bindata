@@ -43,9 +43,9 @@ func Translate(c *Config) error {
 
 	if c.Split {
 		return translateToDir(c, toc, wd)
-	} else {
-		return translateToFile(c, toc, wd)
 	}
+
+	return translateToFile(c, toc, wd)
 }
 
 // ByName implement sort.Interface for []os.FileInfo based on Name()
