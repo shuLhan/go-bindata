@@ -126,5 +126,18 @@ format is specified at build time with the appropriate tags.
 The tags are appended to a `// +build` line in the beginning of the output file
 and must follow the build tags syntax specified by the go tool.
 
+
+Splitting generated file
+
+When you want to embed big files or plenty of files, then the generated output
+is really big (maybe over 3Mo). Even if the generated file shouldn't be read,
+you probably need use analysis tool or an editor which can become slower
+with a such file.
+
+Generating big files can be avoided with `-split` command line option.
+In that case, the given output is a directory path, the tool will generate
+one source file per file to embed, and it will generate a common file
+nammed `common.go` which contains commons parts like API.
+
 */
 package bindata

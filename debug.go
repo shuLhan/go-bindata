@@ -9,7 +9,20 @@ import (
 	"io"
 )
 
-// writeDebug writes the debug code file.
+// writeOneFileDebug writes the debug code file for each file (when splited file).
+func writeOneFileDebug(w io.Writer, c *Config, a *Asset) error {
+	if err := writeDebugFileHeader(w, c.Dev); err != nil {
+		return err
+	}
+
+	if err := writeDebugAsset(w, c, a); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// writeDebug writes the debug code file for single file.
 func writeDebug(w io.Writer, c *Config, toc []Asset) error {
 	err := writeDebugHeader(w)
 	if err != nil {
@@ -26,7 +39,26 @@ func writeDebug(w io.Writer, c *Config, toc []Asset) error {
 	return nil
 }
 
-// writeDebugHeader writes output file headers.
+// writeDebugHeader writes output file headers for each file.
+// This targets debug builds.
+func writeDebugFileHeader(w io.Writer, dev bool) error {
+	add := ""
+	if dev {
+		add = `
+	"path/filepath"`
+	}
+
+	_, err := fmt.Fprintf(w, `import (
+	"fmt"
+	"os"%s
+)
+
+`, add)
+
+	return err
+}
+
+// writeDebugHeader writes output file headers for sigle file.
 // This targets debug builds.
 func writeDebugHeader(w io.Writer) error {
 	_, err := fmt.Fprintf(w, `import (
