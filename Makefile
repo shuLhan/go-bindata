@@ -90,12 +90,17 @@ lint-all: $(LINTER_CMD)
 $(LIB_COVER_OUT): $(LIB_SRC) $(LIB_TEST)
 	@echo ""
 	@echo ">>> Testing library ..."
-	@go test -v -coverprofile=$@ ./
+	@go test -v ./ && \
+		go test -coverprofile=$@ ./ &>/dev/null && \
+		go tool cover -func=$@
+
 
 $(CMD_COVER_OUT): $(CMD_SRC) $(CMD_TEST)
 	@echo ""
 	@echo ">>> Testing cmd ..."
-	@go test -v -coverprofile=$@ $(CMD_DIR)
+	@go test -v $(CMD_DIR) && \
+		go test -coverprofile=$@ $(CMD_DIR) &>/dev/null && \
+		go tool cover -func=$@
 
 $(TEST_COVER_ALL): $(LIB_COVER_OUT) $(CMD_COVER_OUT)
 	@echo ""
