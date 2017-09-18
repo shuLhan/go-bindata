@@ -36,7 +36,8 @@ TEST_OUT          := \
 	$(TESTDATA_OUT_DIR)/compress-nomemcopy.go \
 	$(TESTDATA_OUT_DIR)/debug.go \
 	$(TESTDATA_OUT_DIR)/nocompress-memcopy.go \
-	$(TESTDATA_OUT_DIR)/nocompress-nomemcopy.go
+	$(TESTDATA_OUT_DIR)/nocompress-nomemcopy.go \
+	$(TESTDATA_OUT_DIR)/split/bindata.go
 
 VENDOR_DIR        :=$(PWD)/vendor
 VENDOR_BIN        :=$(VENDOR_DIR)/bin
@@ -121,23 +122,27 @@ coverbrowse: test
 ##
 
 $(TESTDATA_OUT_DIR)/compress-memcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" $(TESTDATA_IN_DIR)/...
+	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" $(TESTDATA_IN_DIR)/...
 	@$(LINTER) --fast --errors $@
 
 $(TESTDATA_OUT_DIR)/compress-nomemcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -nomemcopy $(TESTDATA_IN_DIR)/...
+	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nomemcopy $(TESTDATA_IN_DIR)/...
 	@$(LINTER) --fast --errors $@
 
 $(TESTDATA_OUT_DIR)/debug.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -debug $(TESTDATA_IN_DIR)/...
+	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -debug $(TESTDATA_IN_DIR)/...
 	@$(LINTER) --fast --errors $@
 
 $(TESTDATA_OUT_DIR)/nocompress-memcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -nocompress $(TESTDATA_IN_DIR)/...
+	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nocompress $(TESTDATA_IN_DIR)/...
 	@$(LINTER) --fast --errors $@
 
 $(TESTDATA_OUT_DIR)/nocompress-nomemcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
+	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
+	@$(LINTER) --fast --errors $@
+
+$(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_IN_DIR)/split/*
+	$(TARGET_CMD) -o $(TESTDATA_OUT_DIR)/split/ -prefix="/.*/testdata/" -split $(TESTDATA_IN_DIR)/split/...
 	@$(LINTER) --fast --errors $@
 
 $(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD)

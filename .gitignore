@@ -3,4 +3,9 @@ cover.out
 go-bindata/cover.out
 go-bindata/go-bindata
 lib.cover.out
+testdata/out/split/bindata.go
+testdata/out/split/inSplitTest1.go
+testdata/out/split/inSplitTest2.go
+testdata/out/split/inSplitTest3.go
+testdata/out/split/inSplitTest4.go
 vendor
