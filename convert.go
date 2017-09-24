@@ -190,6 +190,8 @@ func findFiles(
 			return fmt.Errorf("Invalid file: %v", asset.Path)
 		}
 
+		asset.Name = filepath.ToSlash(asset.Name)
+
 		asset.Func = safeFunctionName(asset.Name, knownFuncs)
 		asset.Path, _ = filepath.Abs(asset.Path)
 		*toc = append(*toc, asset)
