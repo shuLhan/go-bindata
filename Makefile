@@ -10,7 +10,7 @@
 .PHONY: clean distclean
 
 CMD_DIR           :=./go-bindata
-TESTDATA_DIR      :=./testdata/
+TESTDATA_DIR      :=./testdata
 TESTDATA_IN_DIR   :=./testdata/in
 TESTDATA_OUT_DIR  :=./testdata/out
 
@@ -31,12 +31,17 @@ LIB_COVER_OUT     :=lib.cover.out
 TEST_COVER_OUT    :=$(TEST_COVER_ALL) $(LIB_COVER_OUT) $(CMD_COVER_OUT)
 TEST_COVER_HTML   :=cover.html
 
+POST_TEST_FILES   := \
+	$(TESTDATA_DIR)/bindata_test.go \
+	$(TESTDATA_DIR)/split_test.go
+
 TEST_OUT          := \
-	$(TESTDATA_OUT_DIR)/compress-memcopy.go \
-	$(TESTDATA_OUT_DIR)/compress-nomemcopy.go \
-	$(TESTDATA_OUT_DIR)/debug.go \
-	$(TESTDATA_OUT_DIR)/nocompress-memcopy.go \
-	$(TESTDATA_OUT_DIR)/nocompress-nomemcopy.go \
+	$(TESTDATA_OUT_DIR)/opt/no-output/bindata.go \
+	$(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go \
+	$(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go \
+	$(TESTDATA_OUT_DIR)/debug/bindata.go \
+	$(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go \
+	$(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go \
 	$(TESTDATA_OUT_DIR)/split/bindata.go
 
 VENDOR_DIR        :=$(PWD)/vendor
@@ -56,7 +61,7 @@ all: build test-cmd
 ##
 
 clean:
-	rm -f $(TEST_COVER_OUT) $(TEST_COVER_HTML)
+	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TESTDATA_OUT_DIR)
 
 distclean: clean
 	rm -rf $(TARGET_CMD) $(TARGET_LIB) $(VENDOR_DIR)
@@ -121,31 +126,66 @@ coverbrowse: test
 ## TEST POST BUILD
 ##
 
-$(TESTDATA_OUT_DIR)/compress-memcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" $(TESTDATA_IN_DIR)/...
-	@$(LINTER) --fast --errors $@
+$(TESTDATA_OUT_DIR)/opt/no-output/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing without '-o' flag"
+	@mkdir -p $(TESTDATA_OUT_DIR)/opt/no-output && \
+		cd $(TESTDATA_OUT_DIR)/opt/no-output && \
+		$(TARGET_CMD) -pkg main -prefix="/.*/testdata/" \
+			-ignore="split/" ../../../../$(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go $(TESTDATA_OUT_DIR)/opt/no-output/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/opt/no-output/
+	go test -v $(TESTDATA_OUT_DIR)/opt/no-output/
 
-$(TESTDATA_OUT_DIR)/compress-nomemcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nomemcopy $(TESTDATA_IN_DIR)/...
-	@$(LINTER) --fast --errors $@
+$(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing default option (compress, memcopy)"
+	@$(TARGET_CMD) -o $@ -pkg main -prefix="/.*/testdata/" \
+		-ignore="split/" $(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go $(TESTDATA_OUT_DIR)/compress/memcopy/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/compress/memcopy/
+	go test -v $(TESTDATA_OUT_DIR)/compress/memcopy/
 
-$(TESTDATA_OUT_DIR)/debug.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -debug $(TESTDATA_IN_DIR)/...
-	@$(LINTER) --fast --errors $@
+$(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing with '-nomemcopy'"
+	@$(TARGET_CMD) -o $@ -pkg main -prefix="/.*/testdata/" \
+		-ignore="split/" -nomemcopy $(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go \
+		$(TESTDATA_OUT_DIR)/compress/nomemcopy/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/compress/nomemcopy/
+	go test -v $(TESTDATA_OUT_DIR)/compress/nomemcopy/
 
-$(TESTDATA_OUT_DIR)/nocompress-memcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nocompress $(TESTDATA_IN_DIR)/...
-	@$(LINTER) --fast --errors $@
+$(TESTDATA_OUT_DIR)/debug/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing opt 'debug'"
+	@$(TARGET_CMD) -o $@ -pkg main -prefix="/.*/testdata/" \
+		-ignore="split/" -debug $(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go $(TESTDATA_OUT_DIR)/debug/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/debug/
+	go test -v $(TESTDATA_OUT_DIR)/debug/
 
-$(TESTDATA_OUT_DIR)/nocompress-nomemcopy.go: $(TESTDATA_IN_DIR)/*
-	$(TARGET_CMD) -o $@ -prefix="/.*/testdata/" -ignore="split/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
-	@$(LINTER) --fast --errors $@
+$(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing opt '-nocompress'"
+	@$(TARGET_CMD) -o $@ -pkg main -prefix="/.*/testdata/" \
+		-ignore="split/" -nocompress $(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go $(TESTDATA_OUT_DIR)/nocompress/memcopy/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/nocompress/memcopy/
+	go test -v $(TESTDATA_OUT_DIR)/nocompress/memcopy/
+
+$(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ">>> Testing opt '-nocompress -nomemcopy'"
+	@$(TARGET_CMD) -o $@ -pkg main -prefix="/.*/testdata/" \
+		-ignore="split/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
+	@cp $(TESTDATA_DIR)/bindata_test.go $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
+	go test -v $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
 
 $(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_IN_DIR)/split/*
-	$(TARGET_CMD) -o $(TESTDATA_OUT_DIR)/split/ -prefix="/.*/testdata/" -split $(TESTDATA_IN_DIR)/split/...
-	@$(LINTER) --fast --errors $@
+	@echo ">>> Testing opt '-split'"
+	@$(TARGET_CMD) -o $(TESTDATA_OUT_DIR)/split/ -pkg main \
+		-prefix="/.*/testdata/" -split $(TESTDATA_IN_DIR)/split/...
+	@cp $(TESTDATA_DIR)/split_test.go $(TESTDATA_OUT_DIR)/split/
+	@$(LINTER) $(TESTDATA_OUT_DIR)/split/
+	go test -v $(TESTDATA_OUT_DIR)/split/
 
-$(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD)
+$(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD) $(POST_TEST_FILES)
 
 test-cmd: $(TEST_OUT)
 
