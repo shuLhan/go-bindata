@@ -1,4 +1,4 @@
-package split
+package main
 
 import (
 	"log"
@@ -50,41 +50,35 @@ func assert(t *testing.T, exp, got interface{}, equal bool) {
 
 func TestAsset(t *testing.T) {
 	tests := []struct {
-		desc       string
-		assetName  string
-		expContent string
-		expErr     string
+		desc   string
+		name   string
+		expErr string
+		exp    string
 	}{{
-		desc:       `With asset "in/split/test.1"`,
-		assetName:  `in/split/test.1`,
-		expContent: "// sample file 1\n",
+		desc:   "With invalid asset",
+		name:   "in/split/test.1",
+		expErr: "open in/split/test.1: file does not exist",
 	}, {
-		desc:       `With asset "in/split/test.2"`,
-		assetName:  `in/split/test.2`,
-		expContent: "// sample file 2\n",
+		desc: "With valid asset",
+		name: "in/a/test.asset",
+		exp: `// sample file
+`,
 	}, {
-		desc:       `With asset "in/split/test.3"`,
-		assetName:  `in/split/test.3`,
-		expContent: "// sample file 3\n",
-	}, {
-		desc:       `With asset "in/split/test.4"`,
-		assetName:  `in/split/test.4`,
-		expContent: "// sample file 4\n",
-	}, {
-		desc:      `With non existing asset "in/split/test.5"`,
-		assetName: `in/split/test.5`,
-		expErr:    "open in/split/test.5: file does not exist",
+		desc: "With space on asset",
+		name: "in/file name",
+		exp: `// Content of "testdata/in/file name"
+`,
 	}}
 
 	for _, test := range tests {
-		t.Log(test.desc)
+		t.Log(test.desc, ":", test.name)
 
-		got, err := Asset(test.assetName)
+		got, err := Asset(test.name)
 		if err != nil {
 			assert(t, test.expErr, err.Error(), true)
 			continue
 		}
 
-		assert(t, test.expContent, string(got), true)
+		assert(t, test.exp, string(got), true)
 	}
 }
