@@ -196,6 +196,7 @@ func Asset(name string) ([]byte, error) {
 
 // MustAsset is like Asset but panics when Asset would return an error.
 // It simplifies safe initialization of global variables.
+// nolint: deadcode
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
 	if err != nil {
@@ -221,6 +222,7 @@ func AssetInfo(name string) (os.FileInfo, error) {
 }
 
 // AssetNames returns the names of the assets.
+// nolint: deadcode
 func AssetNames() []string {
 	names := make([]string, 0, len(_bindata))
 	for name := range _bindata {
