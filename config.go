@@ -225,9 +225,11 @@ func (c *Config) validateOutput() (err error) {
 	// (2)
 	dir, file := filepath.Split(c.Output)
 
-	err = os.MkdirAll(dir, 0700)
-	if err != nil {
-		return fmt.Errorf("Create output directory: %v", err)
+	if dir != "" {
+		err = os.MkdirAll(dir, 0700)
+		if err != nil {
+			return fmt.Errorf("Create output directory: %v", err)
+		}
 	}
 
 	if len(file) == 0 {
