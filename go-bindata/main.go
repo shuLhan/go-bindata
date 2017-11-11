@@ -111,7 +111,7 @@ func initArgs() {
 	flag.BoolVar(&cfg.NoMetadata, "nometadata", cfg.NoMetadata, "Assets will not preserve size, mode, and modtime info.")
 	flag.BoolVar(&cfg.Split, "split", cfg.NoMetadata, "Split output into several files, avoiding to have a big output file.")
 	flag.Int64Var(&cfg.ModTime, "modtime", cfg.ModTime, "Optional modification unix timestamp override for all files.")
-	flag.StringVar(&argPrefix, "prefix", "", "Optional path prefix to strip off asset names.")
+	flag.StringVar(&argPrefix, "prefix", "", "Optional path prefix regular expression to strip off asset names.")
 	flag.StringVar(&cfg.Output, "o", cfg.Output, "Optional name of the output file to be generated.")
 	flag.StringVar(&cfg.Package, "pkg", cfg.Package, "Package name to use in the generated code.")
 	flag.StringVar(&cfg.Tags, "tags", cfg.Tags, "Optional set of build tags to include.")

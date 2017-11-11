@@ -166,9 +166,7 @@ func findFiles(
 			continue
 		}
 
-		if prefix != nil && prefix.MatchString(asset.Name) {
-			asset.Name = prefix.ReplaceAllString(asset.Name, "")
-		} else if strings.HasSuffix(dir, file.Name()) {
+		if strings.HasSuffix(dir, file.Name()) {
 			// Issue 110: dir is a full path, including
 			// the file name (minus the basedir), so this
 			// is what we have to use.
@@ -180,6 +178,12 @@ func findFiles(
 			asset.Name = filepath.Join(dir, file.Name())
 		}
 
+		asset.Name = filepath.ToSlash(asset.Name)
+
+		if prefix != nil && prefix.MatchString(asset.Name) {
+			asset.Name = prefix.ReplaceAllString(asset.Name, "")
+		}
+
 		// If we have a leading slash, get rid of it.
 		if len(asset.Name) > 0 && asset.Name[0] == '/' {
 			asset.Name = asset.Name[1:]
@@ -189,8 +193,6 @@ func findFiles(
 		if len(asset.Name) == 0 {
 			return fmt.Errorf("Invalid file: %v", asset.Path)
 		}
-
-		asset.Name = filepath.ToSlash(asset.Name)
 
 		asset.Func = safeFunctionName(asset.Name, knownFuncs)
 		asset.Path, _ = filepath.Abs(asset.Path)
