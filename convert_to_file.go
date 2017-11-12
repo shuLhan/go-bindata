@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 )
 
 // translateToFile generates one single file
@@ -19,29 +18,12 @@ func translateToFile(c *Config, toc []Asset, wd string) error {
 
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
+
 	defer bfd.Flush()
 
-	// Write the header. This makes e.g. Github ignore diffs in generated files.
-	_, err = fmt.Fprint(bfd, headerGeneratedBy)
+	err = writeHeader(bfd, c, toc, wd)
 	if err != nil {
 		return err
-	}
-	if _, err = fmt.Fprint(bfd, "// sources:\n"); err != nil {
-		return err
-	}
-
-	for _, asset := range toc {
-		relative, _ := filepath.Rel(wd, asset.Path)
-		if _, err = fmt.Fprintf(bfd, "// %s\n", filepath.ToSlash(relative)); err != nil {
-			return err
-		}
-	}
-
-	// Write build tags, if applicable.
-	if len(c.Tags) > 0 {
-		if _, err = fmt.Fprintf(bfd, "// +build %s\n\n", c.Tags); err != nil {
-			return err
-		}
 	}
 
 	// Write package declaration.
