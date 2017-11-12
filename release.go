@@ -70,13 +70,11 @@ func writeReleaseHeader(w io.Writer, c *Config) (err error) {
 // writeReleaseAsset write a release entry for the given asset.
 // A release entry is a function which embeds and returns
 // the file's byte content.
-func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) error {
+func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) (err error) {
 	fd, err := os.Open(asset.Path)
 	if err != nil {
-		return err
+		return
 	}
-
-	defer fd.Close()
 
 	if c.NoCompress {
 		if c.NoMemCopy {
@@ -92,8 +90,15 @@ func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) error {
 		}
 	}
 	if err != nil {
-		return err
+		_ = fd.Close()
+		return
 	}
+
+	err = fd.Close()
+	if err != nil {
+		return
+	}
+
 	return assetReleaseCommon(w, c, asset)
 }
 
@@ -118,8 +123,12 @@ func compressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 
 	gz := gzip.NewWriter(&StringWriter{Writer: w})
 	_, err = io.Copy(gz, r)
-	gz.Close()
+	if err != nil {
+		_ = gz.Close()
+		return
+	}
 
+	err = gz.Close()
 	if err != nil {
 		return
 	}
@@ -138,10 +147,14 @@ func compressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 
 	gz := gzip.NewWriter(&StringWriter{Writer: w})
 	_, err = io.Copy(gz, r)
-	gz.Close()
-
 	if err != nil {
+		_ = gz.Close()
 		return err
+	}
+
+	err = gz.Close()
+	if err != nil {
+		return
 	}
 
 	_, err = fmt.Fprintf(w, tmplFuncCompressMemcopy, asset.Func,
