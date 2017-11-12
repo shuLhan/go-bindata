@@ -168,6 +168,9 @@ type Config struct {
 	// MD5Checksum is a flag that, when set to true, indicates to calculate
 	// MD5 checksums for files.
 	MD5Checksum bool
+
+	// cwd contains current working directory.
+	cwd string
 }
 
 //
@@ -204,19 +207,12 @@ func (c *Config) validateInput() (err error) {
 func (c *Config) validateOutput() (err error) {
 	// (1)
 	if len(c.Output) == 0 {
-		var cwd string
-
-		cwd, err = os.Getwd()
-		if err != nil {
-			return ErrCWD
-		}
-
 		if c.Split {
 			// (1.1)
-			c.Output = cwd
+			c.Output = c.cwd
 		} else {
 			// (1.2)
-			c.Output = filepath.Join(cwd, DefOutputName)
+			c.Output = filepath.Join(c.cwd, DefOutputName)
 		}
 
 		return

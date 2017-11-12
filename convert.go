@@ -20,7 +20,10 @@ import (
 // to Go code and writes new files to the output specified
 // in the given configuration.
 func Translate(c *Config) (err error) {
-	var toc []Asset
+	c.cwd, err = os.Getwd()
+	if err != nil {
+		return ErrCWD
+	}
 
 	// Ensure our configuration has sane values.
 	err = c.validate()
@@ -28,8 +31,10 @@ func Translate(c *Config) (err error) {
 		return
 	}
 
+	var toc []Asset
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
+
 	// Locate all the assets.
 	for _, input := range c.Input {
 		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc,
@@ -39,16 +44,11 @@ func Translate(c *Config) (err error) {
 		}
 	}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return
-	}
-
 	if c.Split {
-		return translateToDir(c, toc, wd)
+		return translateToDir(c, toc)
 	}
 
-	return translateToFile(c, toc, wd)
+	return translateToFile(c, toc)
 }
 
 // ByName implement sort.Interface for []os.FileInfo based on Name()
@@ -254,9 +254,7 @@ func safeFunctionName(name string, knownFuncs map[string]int) string {
 	return name
 }
 
-func writeHeader(bfd io.Writer, c *Config, toc []Asset, wd string) (
-	err error,
-) {
+func writeHeader(bfd io.Writer, c *Config, toc []Asset) (err error) {
 	// Write the header. This makes e.g. Github ignore diffs in generated files.
 	_, err = fmt.Fprint(bfd, headerGeneratedBy)
 	if err != nil {
@@ -275,7 +273,7 @@ func writeHeader(bfd io.Writer, c *Config, toc []Asset, wd string) (
 		}
 
 		for _, asset := range toc {
-			relative, _ := filepath.Rel(wd, asset.Path)
+			relative, _ := filepath.Rel(c.cwd, asset.Path)
 
 			_, err = fmt.Fprintf(bfd, "// %s\n", filepath.ToSlash(relative))
 			if err != nil {

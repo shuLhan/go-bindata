@@ -63,8 +63,10 @@ func TestValidateOutput(t *testing.T) {
 		expErr    string
 		expOutput string
 	}{{
-		desc:      `With empty`,
-		cfg:       &Config{},
+		desc: `With empty`,
+		cfg: &Config{
+			cwd: cwd,
+		},
 		expOutput: filepath.Join(cwd, DefOutputName),
 	}, {
 		desc: `With unwriteable directory`,
