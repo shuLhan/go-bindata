@@ -7,7 +7,7 @@ import (
 )
 
 // translateToFile generates one single file
-func translateToFile(c *Config, toc []Asset, wd string) (err error) {
+func translateToFile(c *Config, toc []Asset) (err error) {
 	// Create output file.
 	fd, err := os.Create(c.Output)
 	if err != nil {
@@ -17,7 +17,7 @@ func translateToFile(c *Config, toc []Asset, wd string) (err error) {
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
-	err = writeHeader(bfd, c, toc, wd)
+	err = writeHeader(bfd, c, toc)
 	if err != nil {
 		goto out
 	}

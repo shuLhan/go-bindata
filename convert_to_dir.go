@@ -8,13 +8,13 @@ import (
 )
 
 // translateToDir generates splited file
-func translateToDir(c *Config, toc []Asset, wd string) error {
-	if err := generateCommonFile(c, toc, wd); err != nil {
+func translateToDir(c *Config, toc []Asset) error {
+	if err := generateCommonFile(c, toc); err != nil {
 		return err
 	}
 
 	for i := range toc {
-		if err := generateOneAsset(c, &toc[i], wd); err != nil {
+		if err := generateOneAsset(c, &toc[i]); err != nil {
 			return err
 		}
 	}
@@ -22,7 +22,7 @@ func translateToDir(c *Config, toc []Asset, wd string) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc []Asset, wd string) (err error) {
+func generateCommonFile(c *Config, toc []Asset) (err error) {
 	// Create output file.
 	fd, err := os.Create(filepath.Join(c.Output, DefOutputName))
 	if err != nil {
@@ -32,7 +32,7 @@ func generateCommonFile(c *Config, toc []Asset, wd string) (err error) {
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
-	err = writeHeader(bfd, c, toc, wd)
+	err = writeHeader(bfd, c, toc)
 	if err != nil {
 		goto out
 	}
@@ -73,7 +73,7 @@ out:
 	return flushAndClose(fd, bfd, err)
 }
 
-func generateOneAsset(c *Config, a *Asset, wd string) (err error) {
+func generateOneAsset(c *Config, a *Asset) (err error) {
 	var relative string
 
 	// Create output file.
@@ -95,7 +95,7 @@ func generateOneAsset(c *Config, a *Asset, wd string) (err error) {
 		goto out
 	}
 
-	relative, _ = filepath.Rel(wd, a.Path)
+	relative, _ = filepath.Rel(c.cwd, a.Path)
 	if _, err = fmt.Fprintln(bfd, filepath.ToSlash(relative)); err != nil {
 		goto out
 	}
