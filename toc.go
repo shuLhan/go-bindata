@@ -38,10 +38,14 @@ func (root *assetTree) Add(route []string, asset Asset) {
 	root.Asset = asset
 }
 
-func ident(w io.Writer, n int) {
+func ident(w io.Writer, n int) (err error) {
 	for i := 0; i < n; i++ {
-		w.Write([]byte{'\t'})
+		_, err = w.Write([]byte{'\t'})
+		if err != nil {
+			return
+		}
 	}
+	return
 }
 
 func (root *assetTree) funcOrNil() string {
@@ -52,14 +56,21 @@ func (root *assetTree) funcOrNil() string {
 	return root.Asset.Func
 }
 
-func (root *assetTree) writeGoMap(w io.Writer, nident int) {
+func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
 	if nident == 0 {
-		io.WriteString(w, "&bintree")
+		_, err = io.WriteString(w, "&bintree")
+		if err != nil {
+			return
+		}
 	}
+
 	fmt.Fprintf(w, "{%s, map[string]*bintree{", root.funcOrNil())
 
 	if len(root.Children) > 0 {
-		io.WriteString(w, "\n")
+		_, err = io.WriteString(w, "\n")
+		if err != nil {
+			return
+		}
 
 		// Sort to make output stable between invocations
 		filenames := make([]string, len(root.Children))
@@ -71,29 +82,53 @@ func (root *assetTree) writeGoMap(w io.Writer, nident int) {
 		sort.Strings(filenames)
 
 		for _, p := range filenames {
-			ident(w, nident+1)
+			err = ident(w, nident+1)
+			if err != nil {
+				return
+			}
 			fmt.Fprintf(w, `"%s": `, p)
-			root.Children[p].writeGoMap(w, nident+1)
+
+			err = root.Children[p].writeGoMap(w, nident+1)
+			if err != nil {
+				return
+			}
 		}
-		ident(w, nident)
+
+		err = ident(w, nident)
+		if err != nil {
+			return
+		}
 	}
 
-	io.WriteString(w, "}}")
-	if nident > 0 {
-		io.WriteString(w, ",")
+	_, err = io.WriteString(w, "}}")
+	if err != nil {
+		return
 	}
-	io.WriteString(w, "\n")
+
+	if nident > 0 {
+		_, err = io.WriteString(w, ",")
+		if err != nil {
+			return
+		}
+	}
+
+	_, err = io.WriteString(w, "\n")
+
+	return
 }
 
-func (root *assetTree) WriteAsGoMap(w io.Writer) error {
-	_, err := fmt.Fprint(w, `type bintree struct {
+func (root *assetTree) WriteAsGoMap(w io.Writer) (err error) {
+	_, err = fmt.Fprint(w, `type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
 
 var _bintree = `)
-	root.writeGoMap(w, 0)
-	return err
+	if err != nil {
+		return
+	}
+
+	return root.writeGoMap(w, 0)
 }
 
 func writeTOCTree(w io.Writer, toc []Asset) error {
@@ -141,6 +176,7 @@ func AssetDir(name string) ([]string, error) {
 		pathList := strings.Split(toc[i].Name, "/")
 		tree.Add(pathList, toc[i])
 	}
+
 	return tree.WriteAsGoMap(w)
 }
 
