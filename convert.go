@@ -19,28 +19,29 @@ import (
 // Translate reads assets from an input directory, converts them
 // to Go code and writes new files to the output specified
 // in the given configuration.
-func Translate(c *Config) error {
+func Translate(c *Config) (err error) {
 	var toc []Asset
 
 	// Ensure our configuration has sane values.
-	err := c.validate()
+	err = c.validate()
 	if err != nil {
-		return err
+		return
 	}
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
 	// Locate all the assets.
 	for _, input := range c.Input {
-		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc, c.Ignore, c.Include, knownFuncs, visitedPaths)
+		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc,
+			c.Ignore, c.Include, knownFuncs, visitedPaths)
 		if err != nil {
-			return err
+			return
 		}
 	}
 
 	wd, err := os.Getwd()
 	if err != nil {
-		return err
+		return
 	}
 
 	if c.Split {
@@ -144,7 +145,12 @@ func findFiles(
 			if recursive {
 				recursivePath := filepath.Join(dir, file.Name())
 				visitedPaths[asset.Path] = true
-				findFiles(recursivePath, prefix, recursive, toc, ignore, include, knownFuncs, visitedPaths)
+				err = findFiles(recursivePath, prefix,
+					recursive, toc, ignore, include,
+					knownFuncs, visitedPaths)
+				if err != nil {
+					return
+				}
 			}
 			continue
 		}
@@ -163,7 +169,12 @@ func findFiles(
 
 			if _, ok := visitedPaths[linkPath]; !ok {
 				visitedPaths[linkPath] = true
-				findFiles(asset.Path, prefix, recursive, toc, ignore, include, knownFuncs, visitedPaths)
+				err = findFiles(asset.Path, prefix, recursive,
+					toc, ignore, include, knownFuncs,
+					visitedPaths)
+				if err != nil {
+					return
+				}
 			}
 			continue
 		}
