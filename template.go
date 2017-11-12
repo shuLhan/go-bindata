@@ -6,7 +6,9 @@ type bintree struct {
 	Children map[string]*bintree
 }
 
-var _bintree = `
+var _bintree = &bintree`
+
+const tmplBinTreeValues string = `{Func: %s, Children: map[string]*bintree{`
 
 const tmplFuncAssetDir string = `
 //
