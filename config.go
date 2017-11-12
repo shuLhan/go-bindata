@@ -40,6 +40,9 @@ type InputConfig struct {
 
 // Config defines a set of options for the asset conversion.
 type Config struct {
+	// cwd contains current working directory.
+	cwd string
+
 	// Name of the package to use. Defaults to 'main'.
 	Package string
 
@@ -71,6 +74,25 @@ type Config struct {
 	//	$ go-bindata -prefix "/.*/some/" /a/path/to/some/templates/
 	//	_bindata["templates/foo.html"] = templates_foo_html
 	Prefix *regexp.Regexp
+
+	// Ignores any filenames matching the regex pattern specified, e.g.
+	// path/to/file.ext will ignore only that file, or \\.gitignore
+	// will match any .gitignore file.
+	//
+	// This parameter can be provided multiple times.
+	Ignore []*regexp.Regexp
+
+	// Include contains list of regex to filter input files.
+	Include []*regexp.Regexp
+
+	// When nonzero, use this as mode for all files.
+	Mode uint
+
+	// When nonzero, use this as unix timestamp for all files.
+	ModTime int64
+
+	// When true, size, mode and modtime are not preserved from files
+	NoMetadata bool
 
 	// NoMemCopy will alter the way the output file is generated.
 	//
@@ -144,21 +166,6 @@ type Config struct {
 	// repository.
 	Dev bool
 
-	// When true, size, mode and modtime are not preserved from files
-	NoMetadata bool
-	// When nonzero, use this as mode for all files.
-	Mode uint
-	// When nonzero, use this as unix timestamp for all files.
-	ModTime int64
-
-	// Ignores any filenames matching the regex pattern specified, e.g.
-	// path/to/file.ext will ignore only that file, or \\.gitignore
-	// will match any .gitignore file.
-	//
-	// This parameter can be provided multiple times.
-	Ignore  []*regexp.Regexp
-	Include []*regexp.Regexp
-
 	// Split the output into several files. Every embedded file is bound into
 	// a specific file, and a common file is also generated containing API and
 	// other common parts.
@@ -168,9 +175,6 @@ type Config struct {
 	// MD5Checksum is a flag that, when set to true, indicates to calculate
 	// MD5 checksums for files.
 	MD5Checksum bool
-
-	// cwd contains current working directory.
-	cwd string
 }
 
 //
