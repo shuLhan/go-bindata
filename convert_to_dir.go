@@ -80,7 +80,6 @@ func generateCommonFile(c *Config, toc []Asset) error {
 
 	// Write restore procedure
 	return writeRestore(bfd)
-
 }
 
 func generateOneAsset(c *Config, a *Asset, wd string) error {
