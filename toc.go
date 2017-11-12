@@ -56,15 +56,24 @@ func (root *assetTree) funcOrNil() string {
 	return root.Asset.Func
 }
 
-func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
-	if nident == 0 {
-		_, err = io.WriteString(w, "&bintree")
-		if err != nil {
-			return
-		}
+//
+// getFilenames will return all files sorted, to make output stable between
+// invocations.
+//
+func (root *assetTree) getFilenames() (filenames []string) {
+	filenames = make([]string, len(root.Children))
+	x := 0
+	for filename := range root.Children {
+		filenames[x] = filename
+		x++
 	}
+	sort.Strings(filenames)
 
-	fmt.Fprintf(w, "{%s, map[string]*bintree{", root.funcOrNil())
+	return
+}
+
+func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
+	fmt.Fprintf(w, tmplBinTreeValues, root.funcOrNil())
 
 	if len(root.Children) > 0 {
 		_, err = io.WriteString(w, "\n")
@@ -72,14 +81,7 @@ func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
 			return
 		}
 
-		// Sort to make output stable between invocations
-		filenames := make([]string, len(root.Children))
-		i := 0
-		for filename := range root.Children {
-			filenames[i] = filename
-			i++
-		}
-		sort.Strings(filenames)
+		filenames := root.getFilenames()
 
 		for _, p := range filenames {
 			err = ident(w, nident+1)
