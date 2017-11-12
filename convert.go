@@ -58,6 +58,65 @@ func (v ByName) Len() int           { return len(v) }
 func (v ByName) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
 func (v ByName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
 
+func getListFileInfo(
+	dirpath string, visitedPaths map[string]bool,
+) (
+	list []os.FileInfo, newdirpath string, err error,
+) {
+	in, err := os.Stat(dirpath)
+	if err != nil {
+		return
+	}
+
+	if !in.IsDir() {
+		newdirpath = filepath.Dir(dirpath)
+		list = make([]os.FileInfo, 1)
+		list[0] = in
+		return
+	}
+
+	newdirpath = dirpath
+	visitedPaths[dirpath] = true
+
+	fd, err := os.Open(dirpath)
+	if err != nil {
+		_ = fd.Close()
+		return
+	}
+
+	list, err = fd.Readdir(0)
+	if err != nil {
+		_ = fd.Close()
+		return
+	}
+
+	err = fd.Close()
+	if err != nil {
+		return
+	}
+
+	// Sort to make output stable between invocations
+	sort.Sort(ByName(list))
+
+	return
+}
+
+func isIgnored(c *Config, path string) bool {
+	for _, re := range c.Ignore {
+		if re.MatchString(path) {
+			return true
+		}
+	}
+
+	for _, re := range c.Include {
+		if re.MatchString(path) {
+			return false
+		}
+	}
+
+	return len(c.Include) > 0
+}
+
 // findFiles recursively finds all the file paths in the given directory tree.
 // They are added to the given map as keys. Values will be safe function names
 // for each file, which will be used when generating the output code.
@@ -80,38 +139,9 @@ func findFiles(
 		dirpath = dir
 	}
 
-	fi, err := os.Stat(dirpath)
+	list, dirpath, err := getListFileInfo(dirpath, visitedPaths)
 	if err != nil {
 		return
-	}
-
-	var list []os.FileInfo
-
-	if !fi.IsDir() {
-		dirpath = filepath.Dir(dirpath)
-		list = []os.FileInfo{fi}
-	} else {
-		var fd *os.File
-
-		visitedPaths[dirpath] = true
-
-		fd, err = os.Open(dirpath)
-		if err != nil {
-			return
-		}
-
-		list, err = fd.Readdir(0)
-		if err != nil {
-			return
-		}
-
-		err = fd.Close()
-		if err != nil {
-			return
-		}
-
-		// Sort to make output stable between invocations
-		sort.Sort(ByName(list))
 	}
 
 	for _, file := range list {
@@ -119,23 +149,7 @@ func findFiles(
 		asset.Path = filepath.Join(dirpath, file.Name())
 		asset.Name = filepath.ToSlash(asset.Path)
 
-		ignoring := false
-		for _, re := range c.Ignore {
-			if re.MatchString(asset.Path) {
-				ignoring = true
-				break
-			}
-		}
-
-		for _, re := range c.Include {
-			if re.MatchString(asset.Path) {
-				ignoring = false
-				break
-			}
-			ignoring = true
-		}
-
-		if ignoring {
+		if isIgnored(c, asset.Path) {
 			continue
 		}
 
@@ -143,8 +157,8 @@ func findFiles(
 			if recursive {
 				recursivePath := filepath.Join(dir, file.Name())
 				visitedPaths[asset.Path] = true
-				err = findFiles(c, recursivePath, recursive, toc,
-					knownFuncs, visitedPaths)
+				err = findFiles(c, recursivePath, recursive,
+					toc, knownFuncs, visitedPaths)
 				if err != nil {
 					return
 				}
