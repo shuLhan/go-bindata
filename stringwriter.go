@@ -29,12 +29,20 @@ func (w *StringWriter) Write(p []byte) (n int, err error) {
 	for n, b = range p {
 		buf[2] = lowerHex[b/16]
 		buf[3] = lowerHex[b%16]
-		w.Writer.Write(buf)
+
+		_, err = w.Writer.Write(buf)
+		if err != nil {
+			return
+		}
+
 		w.c++
 
 		// 28 fits nicely with tab width at 4 and a 120 char line limit
 		if w.c%28 == 0 {
-			w.Writer.Write([]byte("\" +\n\t\""))
+			_, err = w.Writer.Write([]byte("\" +\n\t\""))
+			if err != nil {
+				return
+			}
 		}
 	}
 
