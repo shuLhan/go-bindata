@@ -9,7 +9,7 @@ import (
 
 // translateToDir generates splited file
 func translateToDir(c *Config, toc []Asset, wd string) error {
-	if err := generateCommonFile(c, toc); err != nil {
+	if err := generateCommonFile(c, toc, wd); err != nil {
 		return err
 	}
 
@@ -22,9 +22,9 @@ func translateToDir(c *Config, toc []Asset, wd string) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc []Asset) error {
+func generateCommonFile(c *Config, toc []Asset, wd string) error {
 	// Create output file.
-	fd, err := os.Create(filepath.Join(c.Output, "bindata.go"))
+	fd, err := os.Create(filepath.Join(c.Output, DefOutputName))
 	if err != nil {
 		return err
 	}
@@ -33,23 +33,12 @@ func generateCommonFile(c *Config, toc []Asset) error {
 
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
+
 	defer bfd.Flush()
 
-	// Write the header. This makes e.g. Github ignore diffs in generated files.
-	_, err = fmt.Fprint(bfd, headerGeneratedBy)
+	err = writeHeader(bfd, c, toc, wd)
 	if err != nil {
 		return err
-	}
-
-	if _, err = fmt.Fprint(bfd, "// -- Common file --\n"); err != nil {
-		return err
-	}
-
-	// Write build tags, if applicable.
-	if len(c.Tags) > 0 {
-		if _, err = fmt.Fprintf(bfd, "// +build %s\n\n", c.Tags); err != nil {
-			return err
-		}
 	}
 
 	// Write package declaration.

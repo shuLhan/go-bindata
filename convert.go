@@ -6,6 +6,7 @@ package bindata
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -239,4 +240,44 @@ func safeFunctionName(name string, knownFuncs map[string]int) string {
 	}
 
 	return name
+}
+
+func writeHeader(bfd io.Writer, c *Config, toc []Asset, wd string) (
+	err error,
+) {
+	// Write the header. This makes e.g. Github ignore diffs in generated files.
+	_, err = fmt.Fprint(bfd, headerGeneratedBy)
+	if err != nil {
+		return
+	}
+
+	if c.Split {
+		_, err = fmt.Fprint(bfd, "// -- Common file --\n")
+		if err != nil {
+			return
+		}
+	} else {
+		_, err = fmt.Fprint(bfd, "// sources:\n")
+		if err != nil {
+			return
+		}
+
+		for _, asset := range toc {
+			relative, _ := filepath.Rel(wd, asset.Path)
+
+			_, err = fmt.Fprintf(bfd, "// %s\n", filepath.ToSlash(relative))
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	// Write build tags, if applicable.
+	if len(c.Tags) > 0 {
+		if _, err = fmt.Fprintf(bfd, "// +build %s\n\n", c.Tags); err != nil {
+			return
+		}
+	}
+
+	return
 }
