@@ -5,6 +5,7 @@
 package bindata
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -280,4 +281,25 @@ func writeHeader(bfd io.Writer, c *Config, toc []Asset, wd string) (
 	}
 
 	return
+}
+
+//
+// flushAndClose will flush the buffered writer `bfd` and close the file `fd`.
+//
+func flushAndClose(fd io.Closer, bfd *bufio.Writer, errParam error) (err error) {
+	err = errParam
+
+	if err == nil {
+		err = bfd.Flush()
+	}
+
+	errClose := fd.Close()
+	if errClose != nil {
+		if err == nil {
+			err = errClose
+		}
+	}
+
+	return
+
 }
