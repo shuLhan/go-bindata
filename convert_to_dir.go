@@ -22,29 +22,25 @@ func translateToDir(c *Config, toc []Asset, wd string) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc []Asset, wd string) error {
+func generateCommonFile(c *Config, toc []Asset, wd string) (err error) {
 	// Create output file.
 	fd, err := os.Create(filepath.Join(c.Output, DefOutputName))
 	if err != nil {
 		return err
 	}
 
-	defer fd.Close()
-
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
-	defer bfd.Flush()
-
 	err = writeHeader(bfd, c, toc, wd)
 	if err != nil {
-		return err
+		goto out
 	}
 
 	// Write package declaration.
 	_, err = fmt.Fprintf(bfd, "\npackage %s\n\n", c.Package)
 	if err != nil {
-		return err
+		goto out
 	}
 
 	// Write assets.
@@ -55,61 +51,66 @@ func generateCommonFile(c *Config, toc []Asset, wd string) error {
 	}
 
 	if err != nil {
-		return err
+		goto out
 	}
 
 	// Write table of contents
-	if err := writeTOC(bfd, toc); err != nil {
-		return err
+	err = writeTOC(bfd, toc)
+	if err != nil {
+		goto out
 	}
+
 	// Write hierarchical tree of assets
-	if err := writeTOCTree(bfd, toc); err != nil {
-		return err
+	err = writeTOCTree(bfd, toc)
+	if err != nil {
+		goto out
 	}
 
 	// Write restore procedure
-	return writeRestore(bfd)
+	err = writeRestore(bfd)
+
+out:
+	return flushAndClose(fd, bfd, err)
 }
 
-func generateOneAsset(c *Config, a *Asset, wd string) error {
+func generateOneAsset(c *Config, a *Asset, wd string) (err error) {
+	var relative string
+
 	// Create output file.
 	fd, err := os.Create(filepath.Join(c.Output, a.Func+".go"))
 	if err != nil {
 		return err
 	}
 
-	defer fd.Close()
-
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
-	defer bfd.Flush()
 
 	// Write the header. This makes e.g. Github ignore diffs in generated files.
 	_, err = fmt.Fprint(bfd, headerGeneratedBy)
 	if err != nil {
-		return err
+		goto out
 	}
 
 	if _, err = fmt.Fprint(bfd, "// source: "); err != nil {
-		return err
+		goto out
 	}
 
-	relative, _ := filepath.Rel(wd, a.Path)
+	relative, _ = filepath.Rel(wd, a.Path)
 	if _, err = fmt.Fprintln(bfd, filepath.ToSlash(relative)); err != nil {
-		return err
+		goto out
 	}
 
 	// Write build tags, if applicable.
 	if len(c.Tags) > 0 {
 		if _, err = fmt.Fprintf(bfd, "// +build %s\n\n", c.Tags); err != nil {
-			return err
+			goto out
 		}
 	}
 
 	// Write package declaration.
 	_, err = fmt.Fprintf(bfd, "package %s\n\n", c.Package)
 	if err != nil {
-		return err
+		goto out
 	}
 
 	// Write assets.
@@ -118,6 +119,6 @@ func generateOneAsset(c *Config, a *Asset, wd string) error {
 	} else {
 		err = writeOneFileRelease(bfd, c, a)
 	}
-
-	return err
+out:
+	return flushAndClose(fd, bfd, err)
 }
