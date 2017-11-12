@@ -48,7 +48,9 @@ TEST_OUT          := \
 VENDOR_DIR        :=$(PWD)/vendor
 VENDOR_BIN        :=$(VENDOR_DIR)/bin
 LINTER_CMD        :=$(VENDOR_BIN)/gometalinter
-LINTER_DEF_OPTS   :=--vendor --concurrency=1 --disable=gotype --deadline=240s
+LINTER_DEF_OPTS   :=\
+	--vendor --concurrency=1 --disable=gotype --deadline=240s \
+	--enable-gc --sort=path
 LINTER            :=GOBIN=$(VENDOR_BIN) $(VENDOR_BIN)/gometalinter $(LINTER_DEF_OPTS)
 
 ##
