@@ -238,15 +238,20 @@ func (c *Config) validateOutput() (err error) {
 		}
 	}
 
-	if !c.Split {
-		var fout *os.File
+	if c.Split {
+		return
+	}
 
-		fout, err = os.Create(c.Output)
-		if err != nil {
-			return
-		}
+	var fout *os.File
 
-		fout.Close()
+	fout, err = os.Create(c.Output)
+	if err != nil {
+		return
+	}
+
+	err = fout.Close()
+	if err != nil {
+		return
 	}
 
 	return
