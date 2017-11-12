@@ -19,9 +19,13 @@ func TestFindFiles(t *testing.T) {
 	var toc []Asset
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	prefix := regexp.MustCompile("testdata/dupname")
+	c := &Config{
+		Prefix:  regexp.MustCompile("testdata/dupname"),
+		Ignore:  []*regexp.Regexp{},
+		Include: []*regexp.Regexp{},
+	}
 
-	err := findFiles("testdata/dupname", prefix, true, &toc, []*regexp.Regexp{}, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	err := findFiles(c, "testdata/dupname", true, &toc, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -36,18 +40,26 @@ func TestFindFilesWithSymlinks(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	prefix := regexp.MustCompile("testdata/symlinkSrc")
+	c := &Config{
+		Prefix:  regexp.MustCompile("testdata/symlinkSrc"),
+		Ignore:  []*regexp.Regexp{},
+		Include: []*regexp.Regexp{},
+	}
 
-	err := findFiles("testdata/symlinkSrc", prefix, true, &tocSrc, []*regexp.Regexp{}, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	err := findFiles(c, "testdata/symlinkSrc", true, &tocSrc, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
 
 	knownFuncs = make(map[string]int)
 	visitedPaths = make(map[string]bool)
-	prefix = regexp.MustCompile("testdata/symlinkParent")
+	c = &Config{
+		Prefix:  regexp.MustCompile("testdata/symlinkParent"),
+		Ignore:  []*regexp.Regexp{},
+		Include: []*regexp.Regexp{},
+	}
 
-	err = findFiles("testdata/symlinkParent", prefix, true, &tocTarget, []*regexp.Regexp{}, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	err = findFiles(c, "testdata/symlinkParent", true, &tocTarget, knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -70,9 +82,14 @@ func TestFindFilesWithRecursiveSymlinks(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	prefix := regexp.MustCompile("testdata/symlinkRecursiveParent")
+	c := &Config{
+		Prefix:  regexp.MustCompile("testdata/symlinkRecursiveParent"),
+		Ignore:  []*regexp.Regexp{},
+		Include: []*regexp.Regexp{},
+	}
 
-	err := findFiles("testdata/symlinkRecursiveParent", prefix, true, &toc, []*regexp.Regexp{}, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	err := findFiles(c, "testdata/symlinkRecursiveParent", true, &toc,
+		knownFuncs, visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}
@@ -87,9 +104,14 @@ func TestFindFilesWithSymlinkedFile(t *testing.T) {
 
 	var knownFuncs = make(map[string]int)
 	var visitedPaths = make(map[string]bool)
-	prefix := regexp.MustCompile("testdata/symlinkFile")
+	c := &Config{
+		Prefix:  regexp.MustCompile("testdata/symlinkFile"),
+		Ignore:  []*regexp.Regexp{},
+		Include: []*regexp.Regexp{},
+	}
 
-	err := findFiles("testdata/symlinkFile", prefix, true, &toc, []*regexp.Regexp{}, []*regexp.Regexp{}, knownFuncs, visitedPaths)
+	err := findFiles(c, "testdata/symlinkFile", true, &toc, knownFuncs,
+		visitedPaths)
 	if err != nil {
 		t.Errorf("expected to be no error: %+v", err)
 	}

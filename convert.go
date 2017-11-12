@@ -37,8 +37,8 @@ func Translate(c *Config) (err error) {
 
 	// Locate all the assets.
 	for _, input := range c.Input {
-		err = findFiles(input.Path, c.Prefix, input.Recursive, &toc,
-			c.Ignore, c.Include, knownFuncs, visitedPaths)
+		err = findFiles(c, input.Path, input.Recursive, &toc,
+			knownFuncs, visitedPaths)
 		if err != nil {
 			return
 		}
@@ -62,18 +62,16 @@ func (v ByName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
 // They are added to the given map as keys. Values will be safe function names
 // for each file, which will be used when generating the output code.
 func findFiles(
+	c *Config,
 	dir string,
-	prefix *regexp.Regexp,
 	recursive bool,
 	toc *[]Asset,
-	ignore []*regexp.Regexp,
-	include []*regexp.Regexp,
 	knownFuncs map[string]int,
 	visitedPaths map[string]bool,
 ) (err error) {
 	var dirpath string
 
-	if prefix != nil {
+	if c.Prefix != nil {
 		dirpath, err = filepath.Abs(dir)
 		if err != nil {
 			return
@@ -122,14 +120,14 @@ func findFiles(
 		asset.Name = filepath.ToSlash(asset.Path)
 
 		ignoring := false
-		for _, re := range ignore {
+		for _, re := range c.Ignore {
 			if re.MatchString(asset.Path) {
 				ignoring = true
 				break
 			}
 		}
 
-		for _, re := range include {
+		for _, re := range c.Include {
 			if re.MatchString(asset.Path) {
 				ignoring = false
 				break
@@ -145,8 +143,7 @@ func findFiles(
 			if recursive {
 				recursivePath := filepath.Join(dir, file.Name())
 				visitedPaths[asset.Path] = true
-				err = findFiles(recursivePath, prefix,
-					recursive, toc, ignore, include,
+				err = findFiles(c, recursivePath, recursive, toc,
 					knownFuncs, visitedPaths)
 				if err != nil {
 					return
@@ -169,9 +166,8 @@ func findFiles(
 
 			if _, ok := visitedPaths[linkPath]; !ok {
 				visitedPaths[linkPath] = true
-				err = findFiles(asset.Path, prefix, recursive,
-					toc, ignore, include, knownFuncs,
-					visitedPaths)
+				err = findFiles(c, asset.Path, recursive, toc,
+					knownFuncs, visitedPaths)
 				if err != nil {
 					return
 				}
@@ -179,8 +175,8 @@ func findFiles(
 			continue
 		}
 
-		if prefix != nil && prefix.MatchString(asset.Name) {
-			asset.Name = prefix.ReplaceAllString(asset.Name, "")
+		if c.Prefix != nil && c.Prefix.MatchString(asset.Name) {
+			asset.Name = c.Prefix.ReplaceAllString(asset.Name, "")
 		} else if strings.HasSuffix(dir, file.Name()) {
 			// Issue 110: dir is a full path, including
 			// the file name (minus the basedir), so this
