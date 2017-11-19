@@ -240,22 +240,21 @@ func parseOutputPkg() {
 }
 
 //
-// parseInput determines whether the given path has a recrusive indicator and
-// returns a new path with the recursive indicator chopped off if it does.
+// parseInput determines whether the given path has a recursive indicator
+// ("/...") and returns a new path with the recursive indicator chopped off if
+// it does.
 //
 //  ex:
 //      /path/to/foo/...    -> (/path/to/foo, true)
 //      /path/to/bar        -> (/path/to/bar, false)
 //
-func parseInput(path string) bindata.InputConfig {
+func parseInput(path string) (inputConfig bindata.InputConfig) {
 	if strings.HasSuffix(path, "/...") {
-		return bindata.InputConfig{
-			Path:      filepath.Clean(path[:len(path)-4]),
-			Recursive: true,
-		}
+		inputConfig.Path = filepath.Clean(path[:len(path)-4])
+		inputConfig.Recursive = true
+	} else {
+		inputConfig.Path = filepath.Clean(path)
 	}
 
-	return bindata.InputConfig{
-		Path: filepath.Clean(path),
-	}
+	return
 }
