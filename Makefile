@@ -81,7 +81,7 @@ $(LINTER_CMD): $(VENDOR_DIR)
 
 lint: $(LINTER_CMD)
 	@echo ">>> Linting ..."
-	@$(LINTER) --fast ./...
+	@$(LINTER) ./...
 
 lint-errors: $(LINTER_CMD)
 	@echo ""
