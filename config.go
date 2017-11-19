@@ -27,7 +27,7 @@ var (
 	ErrCWD           = errors.New("Unable to determine current working directory")
 )
 
-// InputConfig defines options on a asset directory to be convert.
+// InputConfig defines options on an asset directory to be convert.
 type InputConfig struct {
 	// Path defines a directory containing asset files to be included
 	// in the generated output.
@@ -69,7 +69,7 @@ type Config struct {
 	// 	$ go-bindata /path/to/templates
 	// 	go_bindata["/path/to/templates/foo.html"] = _path_to_templates_foo_html
 	//
-	//	Running with the `-prefix` flag, we get:
+	// Running with the `-prefix` flag, we get:
 	//
 	//	$ go-bindata -prefix "/.*/some/" /a/path/to/some/templates/
 	//	_bindata["templates/foo.html"] = templates_foo_html
