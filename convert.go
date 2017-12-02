@@ -58,27 +58,38 @@ func (v ByName) Len() int           { return len(v) }
 func (v ByName) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
 func (v ByName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
 
+//
+// getListFileInfo will return list of files in `path`.
+//
+// (1) If `path` is file it will return list with one content.
+// (2) If `path` is directory,
+// (2.1) set the path visited status to true,
+// (2.2) read all files inside directory into list, and
+// (2.3) sort the list to make output stable between invocations.
+//
 func getListFileInfo(
-	dirpath string, visitedPaths map[string]bool,
+	path string, visitedPaths map[string]bool,
 ) (
 	list []os.FileInfo, newdirpath string, err error,
 ) {
-	in, err := os.Stat(dirpath)
+	in, err := os.Stat(path)
 	if err != nil {
 		return
 	}
 
+	// (1)
 	if !in.IsDir() {
-		newdirpath = filepath.Dir(dirpath)
-		list = make([]os.FileInfo, 1)
-		list[0] = in
+		newdirpath = filepath.Dir(path)
+		list = append(list, in)
 		return
 	}
 
-	newdirpath = dirpath
-	visitedPaths[dirpath] = true
+	// (2.1)
+	newdirpath = path
+	visitedPaths[path] = true
 
-	fd, err := os.Open(dirpath)
+	// (2.2)
+	fd, err := os.Open(path)
 	if err != nil {
 		_ = fd.Close()
 		return
@@ -95,7 +106,7 @@ func getListFileInfo(
 		return
 	}
 
-	// Sort to make output stable between invocations
+	// (2.3)
 	sort.Sort(ByName(list))
 
 	return
