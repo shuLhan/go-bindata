@@ -101,19 +101,28 @@ func getListFileInfo(
 	return
 }
 
+//
+// isIgnored will return,
+// (1) true, if `path` is matched with one of ignore-pattern,
+// (2) false, if `path` is matched with one of include-pattern,
+// (3) true, if include-pattern is defined but no matched found.
+//
 func isIgnored(c *Config, path string) bool {
+	// (1)
 	for _, re := range c.Ignore {
 		if re.MatchString(path) {
 			return true
 		}
 	}
 
+	// (2)
 	for _, re := range c.Include {
 		if re.MatchString(path) {
 			return false
 		}
 	}
 
+	// (3)
 	return len(c.Include) > 0
 }
 
