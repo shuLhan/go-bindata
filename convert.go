@@ -165,23 +165,23 @@ func findFiles(
 	}
 
 	for _, file := range list {
-		var asset Asset
-		asset.Path = filepath.Join(dirpath, file.Name())
-		asset.Name = filepath.ToSlash(asset.Path)
+		asset := Asset{
+			Path: filepath.Join(dirpath, file.Name()),
+		}
 
 		if isIgnored(c, asset.Path) {
 			continue
 		}
 
-		if file.IsDir() {
-			if recursive {
-				recursivePath := filepath.Join(dir, file.Name())
-				visitedPaths[asset.Path] = true
-				err = findFiles(c, recursivePath, recursive,
-					toc, knownFuncs, visitedPaths)
-				if err != nil {
-					return
-				}
+		asset.Name = filepath.ToSlash(asset.Path)
+
+		if file.IsDir() && recursive {
+			recursivePath := filepath.Join(dir, file.Name())
+			visitedPaths[asset.Path] = true
+			err = findFiles(c, recursivePath, recursive, toc,
+				knownFuncs, visitedPaths)
+			if err != nil {
+				return
 			}
 			continue
 		}
@@ -234,9 +234,9 @@ func findFiles(
 		}
 
 		asset.Name = filepath.ToSlash(asset.Name)
-
 		asset.Func = safeFunctionName(asset.Name, knownFuncs)
 		asset.Path, _ = filepath.Abs(asset.Path)
+
 		*toc = append(*toc, asset)
 	}
 
