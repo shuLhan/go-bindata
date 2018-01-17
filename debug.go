@@ -91,7 +91,7 @@ type asset struct {
 // A debug entry is simply a function which reads the asset from
 // the original file (e.g.: from disk).
 func writeDebugAsset(w io.Writer, c *Config, asset *Asset) error {
-	pathExpr := fmt.Sprintf("%q", asset.Path)
+	pathExpr := fmt.Sprintf("\"%s/%s\"", c.cwd, asset.Path)
 	if c.Dev {
 		pathExpr = fmt.Sprintf("filepath.Join(rootDir, %q)", asset.Name)
 	}
