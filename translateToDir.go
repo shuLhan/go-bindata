@@ -74,8 +74,6 @@ out:
 }
 
 func generateOneAsset(c *Config, a *Asset) (err error) {
-	var relative string
-
 	// Create output file.
 	fd, err := os.Create(filepath.Join(c.Output, a.Func+".go"))
 	if err != nil {
@@ -95,8 +93,7 @@ func generateOneAsset(c *Config, a *Asset) (err error) {
 		goto out
 	}
 
-	relative, _ = filepath.Rel(c.cwd, a.Path)
-	if _, err = fmt.Fprintln(bfd, filepath.ToSlash(relative)); err != nil {
+	if _, err = fmt.Fprintln(bfd, a.Path); err != nil {
 		goto out
 	}
 
