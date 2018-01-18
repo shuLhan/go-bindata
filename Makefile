@@ -49,11 +49,14 @@ TEST_OUT          := \
 
 VENDOR_DIR        :=$(PWD)/vendor
 VENDOR_BIN        :=$(VENDOR_DIR)/bin
+
+LINTER_OUT        :=.lint.out
 LINTER_CMD        :=$(VENDOR_BIN)/gometalinter
-LINTER_DEF_OPTS   :=\
-	--vendor --concurrency=1 --disable=gotype --deadline=240s \
-	--enable-gc --sort=path
-LINTER            :=GOBIN=$(VENDOR_BIN) $(VENDOR_BIN)/gometalinter $(LINTER_DEF_OPTS)
+LINTER_OPTS   =\
+	--vendor --concurrency=1 --deadline=240s --enable-gc --sort=path \
+	--skip=testdata \
+	--disable=gotype
+LINTER            =GOBIN=$(VENDOR_BIN) $(VENDOR_BIN)/gometalinter $(LINTER_OPTS)
 
 ##
 ## MAIN TARGET
@@ -66,7 +69,8 @@ all: build test-cmd
 ##
 
 clean:
-	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TESTDATA_OUT_DIR)
+	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TESTDATA_OUT_DIR) \
+		$(LINTER_OUT)
 
 distclean: clean
 	rm -rf $(TARGET_CMD) $(TARGET_LIB) $(VENDOR_DIR)
@@ -82,18 +86,18 @@ $(VENDOR_DIR): vendor.deps
 
 $(LINTER_CMD): $(VENDOR_DIR)
 
-lint: $(LINTER_CMD)
+$(LINTER_OUT): $(LINTER_CMD) $(CMD_SRC) $(CMD_TEST) $(LIB_SRC) $(LIB_TEST)
 	@echo ">>> Linting ..."
-	@$(LINTER) ./...
+	-$(LINTER) ./... > $@
+	@cat $@
 
-lint-errors: $(LINTER_CMD)
-	@echo ""
-	@echo ">>> Lint errors only ..."
-	@$(LINTER) --fast --errors ./...
+lint: $(LINTER_OUT)
 
-lint-all: $(LINTER_CMD)
-	@echo ">>> Run all linters ..."
-	@$(LINTER) --exclude="testdata/*" ./...
+lint-errors: LINTER_OPTS+=--fast --errors
+lint-errors: $(LINTER_OUT)
+
+lint-all: LINTER_OPTS+=--enable-all --disable=gotype --disable=nakedret
+lint-all: $(LINTER_OUT)
 
 ##
 ## TEST
