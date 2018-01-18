@@ -136,30 +136,36 @@ coverbrowse: test
 ## TEST POST BUILD
 ##
 
+$(TESTDATA_OUT_DIR)/opt/no-output/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/opt/no-output
 $(TESTDATA_OUT_DIR)/opt/no-output/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing without '-o' flag"
-	@mkdir -p $(TESTDATA_OUT_DIR)/opt/no-output && \
-		cd $(TESTDATA_OUT_DIR)/opt/no-output && \
+	mkdir -p $(OUT_DIR)
+	cd $(OUT_DIR) && \
 		$(TARGET_CMD) -pkg bindata -prefix="/.*/testdata/" \
 			-ignore="split/" ../../../../$(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/opt/no-output/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/opt/no-output/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/opt/no-output/
-	go test -v $(TESTDATA_OUT_DIR)/opt/no-output/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
+$(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/compress/memcopy
 $(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing default option (compress, memcopy)"
-	@$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
 		-ignore="split/" $(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/compress/memcopy/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/compress/memcopy/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/compress/memcopy/
-	go test -v $(TESTDATA_OUT_DIR)/compress/memcopy/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/default/single/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/default/single
 $(TESTDATA_OUT_DIR)/default/single/bindata.go: $(TESTDATA_IN_DIR)/*
 	@echo ""
 	@echo ">>> Testing default option with single input file"
+	mkdir -p $(OUT_DIR)
 	$(TARGET_CMD) -o $@ -pkg bindata -prefix=".*testdata/" \
 		-ignore="split/" $(TESTDATA_IN_DIR)/test.asset
 	cp ./assert_test.go $(OUT_DIR)
@@ -167,50 +173,65 @@ $(TESTDATA_OUT_DIR)/default/single/bindata.go: $(TESTDATA_IN_DIR)/*
 	$(LINTER) $(OUT_DIR) || rm -f $(OUT_DIR)/*
 	go test -v $(OUT_DIR) || rm -f $(OUT_DIR)/*
 
+$(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/compress/nomemcopy
 $(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing with '-nomemcopy'"
-	@$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
 		-ignore="split/" -nomemcopy $(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/compress/nomemcopy/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/compress/nomemcopy/
-	go test -v $(TESTDATA_OUT_DIR)/compress/nomemcopy/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
+$(TESTDATA_OUT_DIR)/debug/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/debug
 $(TESTDATA_OUT_DIR)/debug/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing opt 'debug'"
-	@$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
 		-ignore="split/" -debug $(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/debug/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/debug/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/debug/
-	go test -v $(TESTDATA_OUT_DIR)/debug/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
+$(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/nocompress/memcopy
 $(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing opt '-nocompress'"
-	@$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
 		-ignore="split/" -nocompress $(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/nocompress/memcopy/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/nocompress/memcopy/
-	go test -v $(TESTDATA_OUT_DIR)/nocompress/memcopy/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
+$(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/nocompress/nomemcopy
 $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
 	@echo ">>> Testing opt '-nocompress -nomemcopy'"
-	@$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix="/.*/testdata/" \
 		-ignore="split/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
-	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
-	go test -v $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
+$(TESTDATA_OUT_DIR)/split/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/split
 $(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_IN_DIR)/split/*
+	@echo ""
 	@echo ">>> Testing opt '-split'"
-	@$(TARGET_CMD) -o $(TESTDATA_OUT_DIR)/split/ -pkg bindata \
+	mkdir -p $(OUT_DIR)
+	$(TARGET_CMD) -o $(OUT_DIR) -pkg bindata \
 		-prefix="/.*/testdata/" -split $(TESTDATA_IN_DIR)/split/...
-	@cp ./assert_test.go $(TESTDATA_OUT_DIR)/split/
-	@cp $(TESTDATA_DIR)/_split_test.go $(TESTDATA_OUT_DIR)/split/bindata_test.go
-	@$(LINTER) $(TESTDATA_OUT_DIR)/split/
-	go test -v $(TESTDATA_OUT_DIR)/split/
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_split_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
 
 $(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD) $(POST_TEST_FILES)
 
