@@ -12,18 +12,52 @@ func TestAsset(t *testing.T) {
 		exp    string
 	}{{
 		desc:   "With invalid asset",
+		name:   "in/split/",
+		expErr: "open in/split/: file does not exist",
+	}, {
+		desc:   "With invalid asset",
+		name:   "in/split",
+		expErr: "open in/split: file does not exist",
+	}, {
+		desc:   "With invalid asset",
 		name:   "in/split/test.1",
 		expErr: "open in/split/test.1: file does not exist",
 	}, {
+		desc:   "With invalid asset",
+		name:   "in/split/test.2",
+		expErr: "open in/split/test.2: file does not exist",
+	}, {
+		desc:   "With invalid asset",
+		name:   "in/split/test.3",
+		expErr: "open in/split/test.3: file does not exist",
+	}, {
+		desc:   "With invalid asset",
+		name:   "in/split/test.4",
+		expErr: "open in/split/test.4: file does not exist",
+	}, {
+		desc:   "With invalid asset",
+		name:   "in/a/",
+		expErr: "open in/a/: file does not exist",
+	}, {
+		desc:   "With invalid asset",
+		name:   "in/a",
+		expErr: "open in/a: file does not exist",
+	}, {
 		desc: "With valid asset",
 		name: "in/a/test.asset",
-		exp: `// sample file
-`,
+		exp:  "// sample file\n",
+	}, {
+		desc: "With valid asset",
+		name: "in/b/test.asset",
+		exp:  "// sample file\n",
+	}, {
+		desc: "With valid asset",
+		name: "in/c/test.asset",
+		exp:  "// sample file\n",
 	}, {
 		desc: "With space on asset",
 		name: "in/file name",
-		exp: `// Content of "testdata/in/file name"
-`,
+		exp:  "// Content of \"testdata/in/file name\"\n",
 	}}
 
 	for _, test := range tests {
