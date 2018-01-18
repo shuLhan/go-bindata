@@ -4,6 +4,7 @@
 
 package bindata
 
+// nolint: gas
 import (
 	"bytes"
 	"compress/gzip"
@@ -203,6 +204,7 @@ func nocompressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 	return
 }
 
+// nolint: gas
 func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 	fi, err := os.Stat(asset.Path)
 	if err != nil {
