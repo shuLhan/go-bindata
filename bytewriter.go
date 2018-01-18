@@ -48,7 +48,10 @@ func (w *ByteWriter) Write(p []byte) (n int, err error) {
 			}
 		}
 
-		fmt.Fprintf(w.Writer, "0x%02x,", p[n])
+		_, err = fmt.Fprintf(w.Writer, "0x%02x,", p[n])
+		if err != nil {
+			return
+		}
 		w.c++
 	}
 
