@@ -34,10 +34,12 @@ TEST_COVER_HTML   :=cover.html
 POST_TEST_FILES   := \
 	./assert_test.go \
 	$(TESTDATA_DIR)/_bindata_test.go \
+	$(TESTDATA_DIR)/_out_default_single.go \
 	$(TESTDATA_DIR)/_split_test.go
 
 TEST_OUT          := \
 	$(TESTDATA_OUT_DIR)/opt/no-output/bindata.go \
+	$(TESTDATA_OUT_DIR)/default/single/bindata.go \
 	$(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go \
 	$(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go \
 	$(TESTDATA_OUT_DIR)/debug/bindata.go \
@@ -149,6 +151,17 @@ $(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 	@cp $(TESTDATA_DIR)/_bindata_test.go $(TESTDATA_OUT_DIR)/compress/memcopy/bindata_test.go
 	@$(LINTER) $(TESTDATA_OUT_DIR)/compress/memcopy/
 	go test -v $(TESTDATA_OUT_DIR)/compress/memcopy/
+
+$(TESTDATA_OUT_DIR)/default/single/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/default/single
+$(TESTDATA_OUT_DIR)/default/single/bindata.go: $(TESTDATA_IN_DIR)/*
+	@echo ""
+	@echo ">>> Testing default option with single input file"
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix=".*testdata/" \
+		-ignore="split/" $(TESTDATA_IN_DIR)/test.asset
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_out_default_single.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR) || rm -f $(OUT_DIR)/*
+	go test -v $(OUT_DIR) || rm -f $(OUT_DIR)/*
 
 $(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 	@echo ">>> Testing with '-nomemcopy'"
