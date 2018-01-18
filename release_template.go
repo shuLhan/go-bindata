@@ -90,7 +90,7 @@ import (
 	"unsafe"
 )
 
-// nolint: deadcode
+// nolint: deadcode, gas
 func bindataRead(data, name string) ([]byte, error) {
 	var empty [0]byte
 	sx := (*reflect.StringHeader)(unsafe.Pointer(&data))
