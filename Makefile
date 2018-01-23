@@ -34,8 +34,7 @@ TEST_COVER_HTML   :=cover.html
 POST_TEST_FILES   := \
 	./assert_test.go \
 	$(TESTDATA_DIR)/_bindata_test.go \
-	$(TESTDATA_DIR)/_out_default_single.go \
-	$(TESTDATA_DIR)/_split_test.go
+	$(TESTDATA_DIR)/_out_default_single.go
 
 TEST_OUT          := \
 	$(TESTDATA_OUT_DIR)/opt/no-output/bindata.go \
@@ -45,7 +44,10 @@ TEST_OUT          := \
 	$(TESTDATA_OUT_DIR)/debug/bindata.go \
 	$(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go \
 	$(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go \
-	$(TESTDATA_OUT_DIR)/split/bindata.go
+	$(TESTDATA_OUT_DIR)/split/bindata.go \
+	$(TESTDATA_OUT_DIR)/symlinkFile/bindata.go \
+	$(TESTDATA_OUT_DIR)/symlinkParent/bindata.go \
+	$(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go
 
 VENDOR_DIR        :=$(PWD)/vendor
 VENDOR_BIN        :=$(VENDOR_DIR)/bin
@@ -219,7 +221,7 @@ $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/split/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/split
-$(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_IN_DIR)/split/*
+$(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_DIR)/_split_test.go $(TESTDATA_IN_DIR)/split/*
 	@echo ""
 	@echo ">>> Testing opt '-split'"
 	mkdir -p $(OUT_DIR)
@@ -227,7 +229,46 @@ $(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_IN_DIR)/split/*
 	$(TARGET_CMD) -o $(OUT_DIR) -pkg bindata -prefix=".*testdata/" \
 		-split $(TESTDATA_IN_DIR)/split/...
 	cp ./assert_test.go $(OUT_DIR)
-	cp $(TESTDATA_DIR)/_split_test.go $(OUT_DIR)/bindata_test.go
+	cp $< $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
+
+$(TESTDATA_OUT_DIR)/symlinkFile/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkFile
+$(TESTDATA_OUT_DIR)/symlinkFile/bindata.go: $(TESTDATA_DIR)/symlinkFile $(TESTDATA_DIR)/_symlinkFile_test.go
+	@echo ""
+	@echo ">>> Testing symlink to file"
+	mkdir -p $(OUT_DIR)
+	rm -f $(OUT_DIR)/*
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix=".*testdata/" \
+		$(TESTDATA_DIR)/symlinkFile/...
+	cp ./assert_test.go $(OUT_DIR)
+	cp $(TESTDATA_DIR)/_symlinkFile_test.go $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
+
+$(TESTDATA_OUT_DIR)/symlinkParent/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkParent
+$(TESTDATA_OUT_DIR)/symlinkParent/bindata.go: $(TESTDATA_DIR)/_symlinkParent_test.go $(TESTDATA_DIR)/symlinkParent
+	@echo ""
+	@echo ">>> Testing symlink to directory"
+	mkdir -p $(OUT_DIR)
+	rm -f $(OUT_DIR)/*
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix=".*testdata/" \
+		$(TESTDATA_DIR)/symlinkParent/...
+	cp ./assert_test.go $(OUT_DIR)
+	cp $< $(OUT_DIR)/bindata_test.go
+	$(LINTER) $(OUT_DIR)
+	go test -v $(OUT_DIR)
+
+$(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkRecursiveParent
+$(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go: $(TESTDATA_DIR)/_symlinkRecursiveParent_test.go $(TESTDATA_DIR)/symlinkRecursiveParent
+	@echo ""
+	@echo ">>> Testing symlink recursive directory"
+	mkdir -p $(OUT_DIR)
+	rm -f $(OUT_DIR)/*
+	$(TARGET_CMD) -o $@ -pkg bindata -prefix=".*testdata/" \
+		$(TESTDATA_DIR)/symlinkRecursiveParent/...
+	cp ./assert_test.go $(OUT_DIR)
+	cp $< $(OUT_DIR)/bindata_test.go
 	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
