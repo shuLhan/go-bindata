@@ -131,6 +131,20 @@ test: lint $(TEST_COVER_HTML)
 coverbrowse: test
 	@xdg-open $(TEST_COVER_HTML)
 
+
+##
+## BUILD
+##
+
+$(TARGET_LIB): $(LIB_SRC)
+	go install ./
+
+$(TARGET_CMD): $(CMD_SRC) $(TARGET_LIB)
+	go install $(CMD_DIR)
+
+build: test $(TARGET_CMD)
+
+
 ##
 ## TEST POST BUILD
 ##
@@ -275,15 +289,3 @@ $(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go: $(TESTDATA_DIR)/_symlinkR
 $(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD) $(POST_TEST_FILES)
 
 test-cmd: $(TEST_OUT)
-
-##
-## BUILD
-##
-
-$(TARGET_LIB): $(LIB_SRC)
-	go install ./
-
-$(TARGET_CMD): $(CMD_SRC) $(TARGET_LIB)
-	go install $(CMD_DIR)
-
-build: test $(TARGET_CMD)
