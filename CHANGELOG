@@ -1,3 +1,38 @@
+# v3.3.0 (2017-11-07)
+
+This release is contain major internal refactoring on scanning the file system.
+
+## Enhancements
+
+* Check error and return it
+
+  There are many place where error from file create, write, and close was not
+  checked. With the help of tools, all error was checked and returned to the
+  caller.
+
+* Move generated content (template) to its own file
+
+  Since we generate go code, the template become noise because its inlined
+  with the generator itself, which make the code unreadable. This commit
+  split and move the content of generated to its own file `template.go`.
+
+* Refactoring the file scanner
+
+  There are several problems in old file system scanner,
+
+  * It's unreadable.  It's hard to read what the code do from the start
+    until the end, which make it even harder to write new function/feature.
+
+  * Each input file is converted to absolute path to handle symlink
+    files and/or directory which cause additional process. The new scanner
+    work with relative path only.
+
+## Bug Fixes
+
+* @joerocklin: Add the proper 'DO NOT EDIT' tag on file assets
+* @komuw: update installation with the right location
+
+
 # v3.2.0 (2017-11-07)
 
 ## New Features
