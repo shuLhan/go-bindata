@@ -5,7 +5,9 @@
 package bindata
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -293,29 +295,72 @@ func TestScan(t *testing.T) {
 	}}
 
 	for _, c := range cases {
-		t.Log(c.desc)
+		t.Run(c.desc, func(t *testing.T) {
+			scanner.Reset()
 
-		scanner.Reset()
+			assets := make([]Asset, 0)
 
-		assets := make([]Asset, 0)
+			for _, in := range c.inputs {
+				err = scanner.Scan(in.Path, "", in.Recursive)
+				if err != nil {
+					assert(t, c.expError, err, true)
+				}
 
-		for _, in := range c.inputs {
-			err = scanner.Scan(in.Path, "", in.Recursive)
-			if err != nil {
-				assert(t, c.expError, err, true)
+				assets = append(assets, scanner.assets...)
+
+				scanner.Reset()
 			}
 
-			assets = append(assets, scanner.assets...)
+			assert(t, len(c.expAssets), len(assets), true)
 
-			scanner.Reset()
-		}
-
-		assert(t, len(c.expAssets), len(assets), true)
-
-		for x, gotAsset := range assets {
-			assert(t, c.expAssets[x].Path, gotAsset.Path, true)
-			assert(t, c.expAssets[x].Name, gotAsset.Name, true)
-			assert(t, c.expAssets[x].Func, gotAsset.Func, true)
-		}
+			for x, gotAsset := range assets {
+				assert(t, c.expAssets[x].Path, gotAsset.Path, true)
+				assert(t, c.expAssets[x].Name, gotAsset.Name, true)
+				assert(t, c.expAssets[x].Func, gotAsset.Func, true)
+			}
+		})
 	}
+}
+
+func TestScanAbsoluteSymlink(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := &Config{
+		cwd: cwd,
+	}
+
+	tmpDir, err := ioutil.TempDir("", "go-bindata-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	//defer os.Remove(tmpDir)
+
+	link := filepath.Join(tmpDir, "file1")
+	target, err := filepath.Abs(filepath.Join("testdata", "symlinkSrc", "file1"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = os.Symlink(target, link)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	scanner := NewFSScanner(cfg)
+	err = scanner.Scan(tmpDir, "", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(scanner.assets) != 1 {
+		t.Fatalf("Expected exactly 1 asset but got %d", len(scanner.assets))
+	}
+
+	actual := scanner.assets[0]
+
+	assert(t, link, actual.Path, true)
+	assert(t, link, actual.Name, true)
 }

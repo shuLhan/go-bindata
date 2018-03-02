@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 // ByName implement sort.Interface for []os.FileInfo based on Name()
@@ -143,25 +142,16 @@ func (fss *FSScanner) getListFileInfo(path string) (
 }
 
 //
-// scanSymlink will,
-// (1) read the real-path from symbolic link file, and
-// (2) convert the path and real-path to relative path. Do not use
-// `filepath.Join` here, because the realPath may contain ".." and will be
-// normalized by filepath.Join.
+// scanSymlink reads the real-path from symbolic link file and converts the path
+// and real-path into a relative path.
 //
 func (fss *FSScanner) scanSymlink(path string, recursive bool) (
 	err error,
 ) {
-	// (1)
-	realPath, err := os.Readlink(path)
+	realPath, err := filepath.EvalSymlinks(path)
 	if err != nil {
 		return
 	}
-
-	// (2)
-	realPath = strings.TrimSuffix(path, filepath.Base(path)) + realPath
-
-	realPath = filepath.Clean(realPath)
 
 	fi, err := os.Lstat(realPath)
 	if err != nil {
