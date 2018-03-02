@@ -295,30 +295,30 @@ func TestScan(t *testing.T) {
 	}}
 
 	for _, c := range cases {
-		t.Run(c.desc, func(t *testing.T) {
+		t.Log(c.desc)
+
+		scanner.Reset()
+
+		assets := make([]Asset, 0)
+
+		for _, in := range c.inputs {
+			err = scanner.Scan(in.Path, "", in.Recursive)
+			if err != nil {
+				assert(t, c.expError, err, true)
+			}
+
+			assets = append(assets, scanner.assets...)
+
 			scanner.Reset()
+		}
 
-			assets := make([]Asset, 0)
+		assert(t, len(c.expAssets), len(assets), true)
 
-			for _, in := range c.inputs {
-				err = scanner.Scan(in.Path, "", in.Recursive)
-				if err != nil {
-					assert(t, c.expError, err, true)
-				}
-
-				assets = append(assets, scanner.assets...)
-
-				scanner.Reset()
-			}
-
-			assert(t, len(c.expAssets), len(assets), true)
-
-			for x, gotAsset := range assets {
-				assert(t, c.expAssets[x].Path, gotAsset.Path, true)
-				assert(t, c.expAssets[x].Name, gotAsset.Name, true)
-				assert(t, c.expAssets[x].Func, gotAsset.Func, true)
-			}
-		})
+		for x, gotAsset := range assets {
+			assert(t, c.expAssets[x].Path, gotAsset.Path, true)
+			assert(t, c.expAssets[x].Name, gotAsset.Name, true)
+			assert(t, c.expAssets[x].Func, gotAsset.Func, true)
+		}
 	}
 }
 
