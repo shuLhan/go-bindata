@@ -1,8 +1,6 @@
-.lint.out
 cover.html
 cover.out
-go-bindata/cover.out
-go-bindata/go-bindata
+/cmd/go-bindata/cover.out
+/cmd/go-bindata/go-bindata
 lib.cover.out
 testdata/out/
-vendor

@@ -5,7 +5,6 @@
 ##
 
 .PHONY: all build
-.PHONY: lint lint-all
 .PHONY: test coverbrowse test-cmd
 .PHONY: clean distclean
 
@@ -52,13 +51,6 @@ TEST_OUT          := \
 VENDOR_DIR        :=$(PWD)/vendor
 VENDOR_BIN        :=$(VENDOR_DIR)/bin
 
-LINTER_OUT        :=.lint.out
-LINTER_CMD        :=$(VENDOR_BIN)/gometalinter
-LINTER_OPTS   =\
-	--vendor --concurrency=1 --deadline=240s --enable-gc --sort=path \
-	--skip=testdata \
-	--disable=gotype
-LINTER            =GOBIN=$(VENDOR_BIN) $(VENDOR_BIN)/gometalinter $(LINTER_OPTS)
 
 ##
 ## MAIN TARGET
@@ -71,33 +63,11 @@ all: build test-cmd
 ##
 
 clean:
-	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TESTDATA_OUT_DIR) \
-		$(LINTER_OUT)
+	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TESTDATA_OUT_DIR)
 
 distclean: clean
 	rm -rf $(TARGET_CMD) $(TARGET_LIB) $(VENDOR_DIR)
 
-##
-## LINT
-##
-
-$(VENDOR_DIR): vendor.deps
-	@echo ">>> Installing vendor dependencies ..."
-	@./scripts/deps.sh $<
-	@touch $@
-
-$(LINTER_CMD): $(VENDOR_DIR)
-
-$(LINTER_OUT): $(LINTER_CMD) $(CMD_SRC) $(CMD_TEST) $(LIB_SRC) $(LIB_TEST)
-	@echo ">>> Linting ..."
-	-$(LINTER) ./... > $@
-
-lint: $(LINTER_OUT)
-	@cat $<
-
-lint-all: LINTER_OPTS+=--enable-all --disable=gotype --disable=nakedret
-lint-all: $(LINTER_OUT)
-	@cat $<
 
 ##
 ## TEST
@@ -127,7 +97,7 @@ $(TEST_COVER_HTML): $(TEST_COVER_ALL)
 	@echo ">>> Generate HTML coverage '$@' ..."
 	@go tool cover -html=$< -o $@
 
-test: lint $(TEST_COVER_HTML)
+test: $(TEST_COVER_HTML)
 
 coverbrowse: test
 	@xdg-open $(TEST_COVER_HTML)
@@ -160,7 +130,6 @@ $(TESTDATA_OUT_DIR)/opt/no-output/bindata.go: $(TESTDATA_IN_DIR)/*
 			-ignore="split/" ../../../../$(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/compress/memcopy
@@ -172,7 +141,6 @@ $(TESTDATA_OUT_DIR)/compress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" $(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/default/single/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/default/single
@@ -184,7 +152,6 @@ $(TESTDATA_OUT_DIR)/default/single/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" $(TESTDATA_IN_DIR)/test.asset
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_out_default_single.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR) || rm -f $(OUT_DIR)/*
 	go test -v $(OUT_DIR) || rm -f $(OUT_DIR)/*
 
 $(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/compress/nomemcopy
@@ -196,7 +163,6 @@ $(TESTDATA_OUT_DIR)/compress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" -nomemcopy $(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/debug/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/debug
@@ -208,7 +174,6 @@ $(TESTDATA_OUT_DIR)/debug/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" -debug $(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/nocompress/memcopy
@@ -220,7 +185,6 @@ $(TESTDATA_OUT_DIR)/nocompress/memcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" -nocompress $(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/nocompress/nomemcopy
@@ -232,7 +196,6 @@ $(TESTDATA_OUT_DIR)/nocompress/nomemcopy/bindata.go: $(TESTDATA_IN_DIR)/*
 		-ignore="split/" -nocompress -nomemcopy $(TESTDATA_IN_DIR)/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_bindata_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/split/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/split
@@ -245,7 +208,6 @@ $(TESTDATA_OUT_DIR)/split/bindata.go: $(TESTDATA_DIR)/_split_test.go $(TESTDATA_
 		-split $(TESTDATA_IN_DIR)/split/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $< $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/symlinkFile/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkFile
@@ -258,7 +220,6 @@ $(TESTDATA_OUT_DIR)/symlinkFile/bindata.go: $(TESTDATA_DIR)/symlinkFile $(TESTDA
 		$(TESTDATA_DIR)/symlinkFile/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $(TESTDATA_DIR)/_symlinkFile_test.go $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/symlinkParent/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkParent
@@ -271,7 +232,6 @@ $(TESTDATA_OUT_DIR)/symlinkParent/bindata.go: $(TESTDATA_DIR)/_symlinkParent_tes
 		$(TESTDATA_DIR)/symlinkParent/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $< $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
 $(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go: OUT_DIR=$(TESTDATA_OUT_DIR)/symlinkRecursiveParent
@@ -284,9 +244,8 @@ $(TESTDATA_OUT_DIR)/symlinkRecursiveParent/bindata.go: $(TESTDATA_DIR)/_symlinkR
 		$(TESTDATA_DIR)/symlinkRecursiveParent/...
 	cp ./assert_test.go $(OUT_DIR)
 	cp $< $(OUT_DIR)/bindata_test.go
-	$(LINTER) $(OUT_DIR)
 	go test -v $(OUT_DIR)
 
-$(TEST_OUT): $(LINTER_CMD) $(TARGET_CMD) $(POST_TEST_FILES)
+$(TEST_OUT): $(TARGET_CMD) $(POST_TEST_FILES)
 
 test-cmd: $(TEST_OUT)
