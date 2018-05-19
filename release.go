@@ -232,9 +232,12 @@ func nocompressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 	}
 
 	if utf8.Valid(b) && !bytes.Contains(b, []byte{0}) {
-		w.Write(sanitize(b))
+		_, err = w.Write(sanitize(b))
 	} else {
-		fmt.Fprintf(w, "%+q", b)
+		_, err = fmt.Fprintf(w, "%+q", b)
+	}
+	if err != nil {
+		return
 	}
 
 	_, err = fmt.Fprintf(w, tmplFuncNocompressMemcopy, asset.Func,
