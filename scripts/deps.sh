@@ -9,7 +9,6 @@ VENDOR_BIN=${VENDOR_DIR}/bin
 export GOPATH=${VENDOR_DIR}
 
 while read -r SRC DST VER; do
-
 	REPO_DIR="${VENDOR_SRC}/${DST}"
 
 	echo ""
@@ -21,13 +20,12 @@ while read -r SRC DST VER; do
 
 		if [ "${CUR_VER}" == "${VER}" ]; then
 			echo ">>> Already up to date..."
-			continue
+		else
+			git -C ${REPO_DIR} checkout master
+			git -C ${REPO_DIR} reset --hard HEAD
+			git -C ${REPO_DIR} fetch --tags
+			git -C ${REPO_DIR} pull -q
 		fi
-
-		git -C ${REPO_DIR} checkout master
-		git -C ${REPO_DIR} reset --hard HEAD
-		git -C ${REPO_DIR} fetch --tags
-		git -C ${REPO_DIR} pull -q
 	else
 		mkdir -p ${REPO_DIR}
 		git -C ${REPO_DIR} clone ${SRC} .
@@ -36,7 +34,7 @@ while read -r SRC DST VER; do
 	git -C ${REPO_DIR} checkout -q ${VER}
 
 	echo ">>> Rebuild ..."
-	go get -a ${DST}/...
+	go install -a ${DST}/...
 
 	if [[ "${DST}" == *gometalinter ]]; then
 		echo ">>> Install gometalinter tools ..."

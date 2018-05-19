@@ -83,7 +83,7 @@ distclean: clean
 
 $(VENDOR_DIR): vendor.deps
 	@echo ">>> Installing vendor dependencies ..."
-	@./.scripts/deps.sh $<
+	@./scripts/deps.sh $<
 	@touch $@
 
 $(LINTER_CMD): $(VENDOR_DIR)
