@@ -9,7 +9,7 @@
 .PHONY: test coverbrowse test-cmd
 .PHONY: clean distclean
 
-CMD_DIR           :=./go-bindata
+CMD_DIR           :=./cmd/go-bindata
 TESTDATA_DIR      :=./testdata
 TESTDATA_IN_DIR   :=./testdata/in
 TESTDATA_OUT_DIR  :=./testdata/out
@@ -91,12 +91,13 @@ $(LINTER_CMD): $(VENDOR_DIR)
 $(LINTER_OUT): $(LINTER_CMD) $(CMD_SRC) $(CMD_TEST) $(LIB_SRC) $(LIB_TEST)
 	@echo ">>> Linting ..."
 	-$(LINTER) ./... > $@
-	@cat $@
 
 lint: $(LINTER_OUT)
+	@cat $<
 
 lint-all: LINTER_OPTS+=--enable-all --disable=gotype --disable=nakedret
 lint-all: $(LINTER_OUT)
+	@cat $<
 
 ##
 ## TEST
