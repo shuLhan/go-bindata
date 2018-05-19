@@ -1,5 +1,11 @@
+git@github.com:golang/text  golang.org/x/text  v0.3.0
+git@github.com:golang/sys   golang.org/x/sys  7c87d13
+git@github.com:golang/crypto  golang.org/x/crypto  1a580b3
+git@github.com:golang/net  golang.org/x/net  2491c5d
+git@github.com:golang/tools  golang.org/x/tools  28aef64
 git@github.com:google/go-cmp  github.com/google/go-cmp  v0.2.0
 git@github.com:pkg/errors  github.com/pkg/errors  v0.8.0
 git@github.com:stretchr/testify  github.com/stretchr/testify  v1.2.1
+git@github.com:spf13/pflag  github.com/spf13/pflag  v1.0.1
 git@github.com:gotestyourself/gotestyourself github.com/gotestyourself/gotestyourself  v1.4.0
 git@github.com:alecthomas/gometalinter  github.com/alecthomas/gometalinter v2.0.5
