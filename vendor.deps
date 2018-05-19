@@ -1,1 +1,5 @@
+git@github.com:google/go-cmp  github.com/google/go-cmp  v0.2.0
+git@github.com:pkg/errors  github.com/pkg/errors  v0.8.0
+git@github.com:stretchr/testify  github.com/stretchr/testify  v1.2.1
+git@github.com:gotestyourself/gotestyourself github.com/gotestyourself/gotestyourself  v1.4.0
 git@github.com:alecthomas/gometalinter  github.com/alecthomas/gometalinter v2.0.5
