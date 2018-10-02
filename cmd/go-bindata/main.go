@@ -90,6 +90,7 @@ func version() {
 	lout.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,
 		appVersionMinor, AppVersionRev, runtime.Version())
 	lout.Println("Copyright (c) 2010-2015, Jim Teeuwen.")
+	lout.Println("Copyright (c) 2016-2018, go-bindata Authors.")
 
 	os.Exit(0)
 }
