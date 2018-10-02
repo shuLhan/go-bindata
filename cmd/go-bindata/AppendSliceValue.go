@@ -1,8 +1,8 @@
+// borrowed from https://github.com/hashicorp/serf/blob/master/command/agent/flag_slice_value.go
+
 package main
 
 import "strings"
-
-// borrowed from https://github.com/hashicorp/serf/blob/master/command/agent/flag_slice_value.go
 
 // AppendSliceValue implements the flag.Value interface and allows multiple
 // calls to the same variable to append a list.
