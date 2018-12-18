@@ -7,6 +7,7 @@ package bindata
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 // writeOneFileDebug writes the debug code file for each file (when splited file).
@@ -91,7 +92,7 @@ type asset struct {
 // A debug entry is simply a function which reads the asset from
 // the original file (e.g.: from disk).
 func writeDebugAsset(w io.Writer, c *Config, asset *Asset) error {
-	pathExpr := fmt.Sprintf("\"%s/%s\"", c.cwd, asset.Path)
+	pathExpr := strings.Replace(fmt.Sprintf("\"%s/%s\"", c.cwd, asset.Path), "\\", "/", -1)
 	if c.Dev {
 		pathExpr = fmt.Sprintf("filepath.Join(rootDir, %q)", asset.Name)
 	}
