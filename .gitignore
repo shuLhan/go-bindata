@@ -1,6 +1,7 @@
-cover.html
-cover.out
 /cmd/go-bindata/cover.out
 /cmd/go-bindata/go-bindata
+/go-bindata
+cover.html
+cover.out
 lib.cover.out
 testdata/out/
