@@ -26,6 +26,7 @@ type FSScanner struct {
 	knownFuncs  map[string]int
 	visitedDirs map[string]bool
 	assets      []Asset
+	isFirstTime bool
 }
 
 //
@@ -33,7 +34,8 @@ type FSScanner struct {
 //
 func NewFSScanner(cfg *Config) (fss *FSScanner) {
 	fss = &FSScanner{
-		cfg: cfg,
+		cfg:         cfg,
+		isFirstTime: true,
 	}
 
 	fss.Reset()
@@ -222,7 +224,9 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 		return
 	}
 
-	if !recursive {
+	if fss.isFirstTime {
+		fss.isFirstTime = false
+	} else if !recursive {
 		return
 	}
 

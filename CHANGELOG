@@ -11,6 +11,13 @@
 
    The last line will print the name of generated Go file.
 
+##  Bug Fixes
+
+*  Fix empty assets when running on directory without recursive (#28)
+
+   This fix issue that result in empty generated Go when running `go-bindata`
+   on directory without recursive ("...") directive.
+
 
 # v3.4.0 (2018-05-19)
 
