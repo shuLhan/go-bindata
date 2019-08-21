@@ -28,9 +28,14 @@ func translateToDir(c *Config, toc []Asset) error {
 
 func generateCommonFile(c *Config, toc []Asset) (err error) {
 	// Create output file.
-	fd, err := os.Create(filepath.Join(c.Output, DefOutputName))
+	out := filepath.Join(c.Output, DefOutputName)
+	fd, err := os.Create(out)
 	if err != nil {
 		return err
+	}
+
+	if c.Verbose {
+		fmt.Printf("> %s\n", out)
 	}
 
 	// Create a buffered writer for better performance.
@@ -79,9 +84,14 @@ out:
 
 func generateOneAsset(c *Config, a *Asset) (err error) {
 	// Create output file.
-	fd, err := os.Create(filepath.Join(c.Output, a.Func+".go"))
+	out := filepath.Join(c.Output, a.Func+".go")
+	fd, err := os.Create(out)
 	if err != nil {
 		return err
+	}
+
+	if c.Verbose {
+		fmt.Printf("> %s\n", out)
 	}
 
 	// Create a buffered writer for better performance.

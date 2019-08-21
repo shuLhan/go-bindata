@@ -101,6 +101,10 @@ func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 		fss.knownFuncs[asset.Func] = 2
 	}
 
+	if fss.cfg.Verbose {
+		fmt.Printf("+ %+v\n", path)
+	}
+
 	fss.assets = append(fss.assets, asset)
 }
 
@@ -197,6 +201,9 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 	path = filepath.Clean(path)
 
 	if fss.isIgnored(path) {
+		if fss.cfg.Verbose {
+			fmt.Printf("- %s\n", path)
+		}
 		return
 	}
 

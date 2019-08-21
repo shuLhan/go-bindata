@@ -1,3 +1,17 @@
+# v4.0.0 (2019-09-xx)
+
+##  Enhancements
+
+*  Add verbose option (#21)
+
+   The verbose option ("-verbose") print the file that being scanned.
+   For file that is being added (either with include option or not) it will
+   print the path prefixed with "+", and for file that is ignored it will
+   print the path prefixed with "-".
+
+   The last line will print the name of generated Go file.
+
+
 # v3.4.0 (2018-05-19)
 
 Linting task and dependencies is removed from make task. Linting should be

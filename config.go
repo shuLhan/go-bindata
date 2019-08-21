@@ -175,6 +175,9 @@ type Config struct {
 	// MD5Checksum is a flag that, when set to true, indicates to calculate
 	// MD5 checksums for files.
 	MD5Checksum bool
+
+	// Verbose flag to display verbose output.
+	Verbose bool
 }
 
 //

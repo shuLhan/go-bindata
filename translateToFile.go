@@ -18,6 +18,10 @@ func translateToFile(c *Config, toc []Asset) (err error) {
 		return err
 	}
 
+	if c.Verbose {
+		fmt.Printf("> %s\n", c.Output)
+	}
+
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
