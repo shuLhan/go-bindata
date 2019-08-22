@@ -20,7 +20,7 @@ var sanitizeTests = []struct {
 
 func TestSanitize(t *testing.T) {
 	for _, tt := range sanitizeTests {
-		out := []byte(sanitize([]byte(tt.in)))
+		out := sanitize([]byte(tt.in))
 		if string(out) != tt.out {
 			t.Errorf("sanitize(%q):\nhave %q\nwant %q", tt.in, out, tt.out)
 		}
