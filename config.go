@@ -222,7 +222,7 @@ func (c *Config) validateOutput() (err error) {
 			c.Output = filepath.Join(c.cwd, DefOutputName)
 		}
 
-		return
+		return nil
 	}
 
 	// (2)
@@ -242,22 +242,17 @@ func (c *Config) validateOutput() (err error) {
 	}
 
 	if c.Split {
-		return
+		return nil
 	}
 
 	var fout *os.File
 
 	fout, err = os.Create(c.Output)
 	if err != nil {
-		return
+		return err
 	}
 
-	err = fout.Close()
-	if err != nil {
-		return
-	}
-
-	return
+	return fout.Close()
 }
 
 //

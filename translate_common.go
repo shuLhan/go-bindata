@@ -14,24 +14,24 @@ func writeHeader(bfd io.Writer, c *Config, toc []Asset) (err error) {
 	// Write the header. This makes e.g. Github ignore diffs in generated files.
 	_, err = fmt.Fprint(bfd, headerGeneratedBy)
 	if err != nil {
-		return
+		return err
 	}
 
 	if c.Split {
 		_, err = fmt.Fprint(bfd, "// -- Common file --\n")
 		if err != nil {
-			return
+			return err
 		}
 	} else {
 		_, err = fmt.Fprint(bfd, "// sources:\n")
 		if err != nil {
-			return
+			return err
 		}
 
 		for _, asset := range toc {
 			_, err = fmt.Fprintf(bfd, "// %s\n", asset.Path)
 			if err != nil {
-				return
+				return err
 			}
 		}
 	}
@@ -39,11 +39,11 @@ func writeHeader(bfd io.Writer, c *Config, toc []Asset) (err error) {
 	// Write build tags, if applicable.
 	if len(c.Tags) > 0 {
 		if _, err = fmt.Fprintf(bfd, "// +build %s\n\n", c.Tags); err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }
 
 //

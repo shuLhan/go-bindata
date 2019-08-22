@@ -32,7 +32,7 @@ func (w *StringWriter) Write(p []byte) (n int, err error) {
 
 		_, err = w.Writer.Write(buf)
 		if err != nil {
-			return
+			return n, err
 		}
 
 		w.c++
@@ -41,12 +41,12 @@ func (w *StringWriter) Write(p []byte) (n int, err error) {
 		if w.c%28 == 0 {
 			_, err = w.Writer.Write([]byte("\" +\n\t\""))
 			if err != nil {
-				return
+				return n, err
 			}
 		}
 	}
 
 	n++
 
-	return
+	return n, nil
 }

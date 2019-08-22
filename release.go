@@ -250,7 +250,7 @@ func nocompressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 	fi, err := os.Stat(asset.Path)
 	if err != nil {
-		return
+		return err
 	}
 
 	mode := uint(fi.Mode())
@@ -274,12 +274,12 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 
 		buf, err = ioutil.ReadFile(asset.Path)
 		if err != nil {
-			return
+			return err
 		}
 
 		h := md5.New()
 		if _, err = h.Write(buf); err != nil {
-			return
+			return err
 		}
 		md5checksum = fmt.Sprintf("%x", h.Sum(nil))
 	}
@@ -287,5 +287,5 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 	_, err = fmt.Fprintf(w, tmplReleaseCommon, asset.Func, asset.Func,
 		asset.Name, size, md5checksum, mode, modTime)
 
-	return
+	return err
 }

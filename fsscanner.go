@@ -156,31 +156,31 @@ func (fss *FSScanner) scanSymlink(path string, recursive bool) (
 ) {
 	realPath, err := filepath.EvalSymlinks(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	fi, err := os.Lstat(realPath)
 	if err != nil {
-		return
+		return err
 	}
 
 	if fi.Mode().IsRegular() {
 		fss.addAsset(path, realPath, fi)
-		return
+		return nil
 	}
 
 	if !recursive {
-		return
+		return nil
 	}
 
 	_, ok := fss.visitedDirs[realPath]
 	if ok {
-		return
+		return nil
 	}
 
 	list, err := fss.getListFileInfo(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, fi = range list {
@@ -189,11 +189,11 @@ func (fss *FSScanner) scanSymlink(path string, recursive bool) (
 
 		err = fss.Scan(filePath, fileRealPath, recursive)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }
 
 //
@@ -206,38 +206,37 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 		if fss.cfg.Verbose {
 			fmt.Printf("- %s\n", path)
 		}
-		return
+		return nil
 	}
 
 	fi, err := os.Lstat(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	if fi.Mode()&os.ModeSymlink == os.ModeSymlink {
-		err = fss.scanSymlink(path, recursive)
-		return
+		return fss.scanSymlink(path, recursive)
 	}
 
 	if fi.Mode().IsRegular() {
 		fss.addAsset(path, realPath, fi)
-		return
+		return nil
 	}
 
 	if fss.isFirstTime {
 		fss.isFirstTime = false
 	} else if !recursive {
-		return
+		return nil
 	}
 
 	_, ok := fss.visitedDirs[path]
 	if ok {
-		return
+		return nil
 	}
 
 	list, err := fss.getListFileInfo(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, fi = range list {
@@ -245,9 +244,9 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 
 		err = fss.Scan(filePath, "", recursive)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }

@@ -78,7 +78,7 @@ func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
 	if len(root.Children) > 0 {
 		_, err = io.WriteString(w, "\n")
 		if err != nil {
-			return
+			return err
 		}
 
 		filenames := root.getFilenames()
@@ -86,37 +86,37 @@ func (root *assetTree) writeGoMap(w io.Writer, nident int) (err error) {
 		for _, p := range filenames {
 			err = ident(w, nident+1)
 			if err != nil {
-				return
+				return err
 			}
 			fmt.Fprintf(w, `"%s": `, p)
 
 			err = root.Children[p].writeGoMap(w, nident+1)
 			if err != nil {
-				return
+				return err
 			}
 		}
 
 		err = ident(w, nident)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
 	_, err = io.WriteString(w, "}}")
 	if err != nil {
-		return
+		return err
 	}
 
 	if nident > 0 {
 		_, err = io.WriteString(w, ",")
 		if err != nil {
-			return
+			return err
 		}
 	}
 
 	_, err = io.WriteString(w, "\n")
 
-	return
+	return err
 }
 
 func (root *assetTree) WriteAsGoMap(w io.Writer) (err error) {

@@ -26,37 +26,37 @@ type ByteWriter struct {
 
 func (w *ByteWriter) Write(p []byte) (n int, err error) {
 	if len(p) == 0 {
-		return
+		return 0, nil
 	}
 
 	for n = range p {
 		if w.c%12 == 0 {
 			_, err = w.Writer.Write(newline)
 			if err != nil {
-				return
+				return n, err
 			}
 
 			_, err = w.Writer.Write(dataindent)
 			if err != nil {
-				return
+				return n, err
 			}
 
 			w.c = 0
 		} else {
 			_, err = w.Writer.Write(space)
 			if err != nil {
-				return
+				return n, err
 			}
 		}
 
 		_, err = fmt.Fprintf(w.Writer, "0x%02x,", p[n])
 		if err != nil {
-			return
+			return n, err
 		}
 		w.c++
 	}
 
 	n++
 
-	return
+	return n, nil
 }
