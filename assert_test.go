@@ -12,6 +12,7 @@ import (
 	"testing"
 )
 
+//nolint: gochecknoglobals
 var (
 	_traces = make([]byte, 1024)
 	lerr    = log.New(os.Stderr, "", 0)

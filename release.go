@@ -4,11 +4,10 @@
 
 package bindata
 
-// nolint: gas
 import (
 	"bytes"
 	"compress/gzip"
-	"crypto/md5"
+	"crypto/md5" //nolint: gas
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -103,6 +102,7 @@ func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) (err error) {
 	return assetReleaseCommon(w, c, asset)
 }
 
+//nolint: gochecknoglobals
 var (
 	backquote = []byte("`")
 	bom       = []byte("\xEF\xBB\xBF")

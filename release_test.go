@@ -6,6 +6,7 @@ package bindata
 
 import "testing"
 
+//nolint: gochecknoglobals
 var sanitizeTests = []struct {
 	in  string
 	out string

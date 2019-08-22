@@ -9,6 +9,7 @@ import (
 	"io"
 )
 
+//nolint: gochecknoglobals
 var (
 	newline    = []byte{'\n'}
 	dataindent = []byte{'\t', '\t'}
