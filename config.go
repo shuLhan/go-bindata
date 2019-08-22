@@ -22,9 +22,9 @@ const (
 
 // List of errors.
 var (
-	ErrNoInput       = errors.New("No input")
-	ErrNoPackageName = errors.New("Missing package name")
-	ErrCWD           = errors.New("Unable to determine current working directory")
+	ErrNoInput       = errors.New("no input")
+	ErrNoPackageName = errors.New("missing package name")
+	ErrCWD           = errors.New("unable to determine current working directory")
 )
 
 // InputConfig defines options on an asset directory to be convert.
@@ -196,7 +196,7 @@ func (c *Config) validateInput() (err error) {
 	for _, input := range c.Input {
 		_, err = os.Lstat(input.Path)
 		if err != nil {
-			return fmt.Errorf("Failed to stat input path '%s': %v",
+			return fmt.Errorf("failed to stat input path '%s': %v",
 				input.Path, err)
 		}
 	}
@@ -231,7 +231,7 @@ func (c *Config) validateOutput() (err error) {
 	if dir != "" {
 		err = os.MkdirAll(dir, 0700)
 		if err != nil {
-			return fmt.Errorf("Create output directory: %v", err)
+			return fmt.Errorf("create output directory: %v", err)
 		}
 	}
 

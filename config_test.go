@@ -26,7 +26,7 @@ func TestValidateInput(t *testing.T) {
 				Path: "",
 			}},
 		},
-		expErr: `Failed to stat input path '': lstat : no such file or directory`,
+		expErr: `failed to stat input path '': lstat : no such file or directory`,
 	}, {
 		desc: `With directory not exist`,
 		cfg: &Config{
@@ -34,7 +34,7 @@ func TestValidateInput(t *testing.T) {
 				Path: "./notexist",
 			}},
 		},
-		expErr: `Failed to stat input path './notexist': lstat ./notexist: no such file or directory`,
+		expErr: `failed to stat input path './notexist': lstat ./notexist: no such file or directory`,
 	}, {
 		desc: `With file as input`,
 		cfg: &Config{
@@ -77,7 +77,7 @@ func TestValidateOutput(t *testing.T) {
 		cfg: &Config{
 			Output: "/root/.ssh/template.go",
 		},
-		expErr: `Create output directory: mkdir /root/.ssh/: permission denied`,
+		expErr: `create output directory: mkdir /root/.ssh/: permission denied`,
 	}, {
 		desc: `With unwriteable file`,
 		cfg: &Config{
