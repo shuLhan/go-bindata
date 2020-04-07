@@ -15,7 +15,6 @@ const lowerHex = "0123456789abcdef"
 //
 type StringWriter struct {
 	io.Writer
-	c int
 }
 
 func (w *StringWriter) Write(p []byte) (n int, err error) {
@@ -33,16 +32,6 @@ func (w *StringWriter) Write(p []byte) (n int, err error) {
 		_, err = w.Writer.Write(buf)
 		if err != nil {
 			return n, err
-		}
-
-		w.c++
-
-		// 28 fits nicely with tab width at 4 and a 120 char line limit
-		if w.c%28 == 0 {
-			_, err = w.Writer.Write([]byte("\" +\n\t\""))
-			if err != nil {
-				return n, err
-			}
 		}
 	}
 

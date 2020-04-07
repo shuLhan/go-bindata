@@ -156,7 +156,7 @@ func sanitizeChunks(buf *bytes.Buffer, chunks [][]byte) {
 }
 
 func compressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, "var _%s = \"\" +\n\t\"", asset.Func)
+	_, err = fmt.Fprintf(w, `var _%s = "`, asset.Func)
 	if err != nil {
 		return
 	}
@@ -180,7 +180,7 @@ func compressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 }
 
 func compressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, "var _%s = []byte(\n\t\"", asset.Func)
+	_, err = fmt.Fprintf(w, `var _%s = []byte("`, asset.Func)
 	if err != nil {
 		return err
 	}
