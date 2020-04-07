@@ -61,10 +61,10 @@ func TestValidateOutput(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tests := []struct {
+	cases := []struct {
 		desc      string
 		cfg       *Config
-		expErr    string
+		expErr    []string
 		expOutput string
 	}{{
 		desc: `With empty`,
@@ -77,13 +77,19 @@ func TestValidateOutput(t *testing.T) {
 		cfg: &Config{
 			Output: "/root/.ssh/template.go",
 		},
-		expErr: `create output directory: mkdir /root/.ssh/: permission denied`,
+		expErr: []string{
+			`create output directory: mkdir /root: read-only file system`,
+			`create output directory: mkdir /root/.ssh/: permission denied`,
+		},
 	}, {
 		desc: `With unwriteable file`,
 		cfg: &Config{
 			Output: "/template.go",
 		},
-		expErr: `open /template.go: permission denied`,
+		expErr: []string{
+			`open /template.go: permission denied`,
+			`open /template.go: read-only file system`,
+		},
 	}, {
 		desc: `With output as directory`,
 		cfg: &Config{
@@ -92,15 +98,21 @@ func TestValidateOutput(t *testing.T) {
 		expOutput: filepath.Join("/tmp", DefOutputName),
 	}}
 
-	for _, test := range tests {
-		t.Log(test.desc)
+test:
+	for _, c := range cases {
+		t.Log(c.desc)
 
-		err := test.cfg.validateOutput()
+		err := c.cfg.validateOutput()
 		if err != nil {
-			assert(t, test.expErr, err.Error(), true)
-			continue
+			for _, expErr := range c.expErr {
+				if expErr == err.Error() {
+					continue test
+				}
+			}
+			t.Fatalf("expecting one of error %q, got %q",
+				c.expErr, err.Error())
 		}
 
-		assert(t, test.expOutput, test.cfg.Output, true)
+		assert(t, c.expOutput, c.cfg.Output, true)
 	}
 }
