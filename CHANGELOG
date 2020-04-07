@@ -1,4 +1,4 @@
-# v4.0.0 (2019-09-xx)
+# v3.5.0 (2020-04-07)
 
 ##  Enhancements
 
@@ -13,10 +13,16 @@
 
 ##  Bug Fixes
 
+*  Fix stack overflow when loading large data with compress option (#35)
+
 *  Fix empty assets when running on directory without recursive (#28)
 
    This fix issue that result in empty generated Go when running `go-bindata`
    on directory without recursive ("...") directive.
+
+##  Misc
+
+*  test: fix test with Go version 1.14 or greater
 
 
 # v3.4.0 (2018-05-19)

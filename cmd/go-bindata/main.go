@@ -20,7 +20,7 @@ import (
 const (
 	appName         = "go-bindata"
 	appVersionMajor = 3
-	appVersionMinor = 4
+	appVersionMinor = 5
 )
 
 var (
@@ -90,7 +90,7 @@ func version() {
 	lout.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,
 		appVersionMinor, AppVersionRev, runtime.Version())
 	lout.Println("Copyright (c) 2010-2015, Jim Teeuwen.")
-	lout.Println("Copyright (c) 2016-2018, go-bindata Authors.")
+	lout.Println("Copyright (c) 2016-2020, go-bindata Authors.")
 
 	os.Exit(0)
 }
