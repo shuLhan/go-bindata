@@ -225,7 +225,8 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 
 	if fss.isFirstTime {
 		fss.isFirstTime = false
-	} else if !recursive {
+	}
+	if !recursive {
 		return nil
 	}
 
