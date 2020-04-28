@@ -63,6 +63,18 @@ func TestScan(t *testing.T) {
 			Func: "bindataTestdataSymlinkSrcFile4",
 		}},
 	}, {
+		desc: "With directory and a file",
+		inputs: []*InputConfig{{
+			Path: "./testdata/in/a",
+		}, {
+			Path: "./testdata/in/a/test.asset",
+		}},
+		expAssets: []*Asset{{
+			Path: "testdata/in/a/test.asset",
+			Name: "testdata/in/a/test.asset",
+			Func: "bindataTestdataInATestasset",
+		}},
+	}, {
 		desc: "With symlink to file",
 		inputs: []*InputConfig{{
 			Path:      "./testdata/symlinkFile",
