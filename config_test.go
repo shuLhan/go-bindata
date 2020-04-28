@@ -14,6 +14,7 @@ func TestValidateInput(t *testing.T) {
 	tests := []struct {
 		desc   string
 		cfg    *Config
+		exp    []InputConfig
 		expErr string
 	}{{
 		desc:   `With empty list`,
@@ -26,7 +27,9 @@ func TestValidateInput(t *testing.T) {
 				Path: "",
 			}},
 		},
-		expErr: `failed to stat input path '': lstat : no such file or directory`,
+		exp: []InputConfig{{
+			Path: ".",
+		}},
 	}, {
 		desc: `With directory not exist`,
 		cfg: &Config{
@@ -34,7 +37,7 @@ func TestValidateInput(t *testing.T) {
 				Path: "./notexist",
 			}},
 		},
-		expErr: `failed to stat input path './notexist': lstat ./notexist: no such file or directory`,
+		expErr: `failed to stat input path 'notexist': lstat notexist: no such file or directory`,
 	}, {
 		desc: `With file as input`,
 		cfg: &Config{
@@ -42,6 +45,21 @@ func TestValidateInput(t *testing.T) {
 				Path: "./README.md",
 			}},
 		},
+		exp: []InputConfig{{
+			Path: "README.md",
+		}},
+	}, {
+		desc: `With duplicate inputs`,
+		cfg: &Config{
+			Input: []InputConfig{{
+				Path: "./testdata/in/test.asset",
+			}, {
+				Path: "./testdata/in/test.asset",
+			}},
+		},
+		exp: []InputConfig{{
+			Path: "testdata/in/test.asset",
+		}},
 	}}
 
 	for _, test := range tests {
@@ -52,6 +70,8 @@ func TestValidateInput(t *testing.T) {
 			assert(t, test.expErr, err.Error(), true)
 			continue
 		}
+
+		assert(t, test.exp, test.cfg.Input, true)
 	}
 }
 

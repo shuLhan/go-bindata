@@ -193,14 +193,28 @@ func NewConfig() *Config {
 }
 
 func (c *Config) validateInput() (err error) {
+	uniqPaths := make(map[string]struct{}, len(c.Input))
+	newInputs := make([]InputConfig, 0, len(c.Input))
+
 	for _, input := range c.Input {
+		input.Path = filepath.Clean(input.Path)
+		_, ok := uniqPaths[input.Path]
+		if ok {
+			continue
+		}
 		_, err = os.Lstat(input.Path)
 		if err != nil {
 			return fmt.Errorf("failed to stat input path '%s': %v",
 				input.Path, err)
 		}
+		uniqPaths[input.Path] = struct{}{}
+		newInputs = append(newInputs, input)
 	}
-	return
+	if len(newInputs) == 0 {
+		return ErrNoInput
+	}
+	c.Input = newInputs
+	return nil
 }
 
 //
