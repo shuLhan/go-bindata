@@ -25,23 +25,17 @@ func Translate(c *Config) (err error) {
 
 	scanner := NewFSScanner(c)
 
-	assets := make([]Asset, 0)
-
 	// Locate all the assets.
 	for _, input := range c.Input {
 		err = scanner.Scan(input.Path, "", input.Recursive)
 		if err != nil {
 			return
 		}
-
-		assets = append(assets, scanner.assets...)
-
-		scanner.Reset()
 	}
 
 	if c.Split {
-		return translateToDir(c, assets)
+		return translateToDir(c, scanner.assets)
 	}
 
-	return translateToFile(c, assets)
+	return translateToFile(c, scanner.assets)
 }
