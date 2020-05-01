@@ -1,3 +1,11 @@
+# v3.5.1 (2020-05-01)
+
+##  Bug fixes
+
+*  config: check for duplicate inputs (#37)
+*  fsscanner: fix duplicate assets generated without recursive path (#36)
+
+
 # v3.5.0 (2020-04-07)
 
 ##  Enhancements
