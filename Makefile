@@ -12,8 +12,6 @@ TESTDATA_DIR      :=./testdata
 TESTDATA_IN_DIR   :=./testdata/in
 TESTDATA_OUT_DIR  :=./testdata/out
 
-SRC               :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .GoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
-TEST              :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .TestGoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
 TEST_COVER_ALL    :=cover.out
 
 TARGET_CMD        :=$(shell go list -f '{{ .Target }}' $(CMD_DIR))
