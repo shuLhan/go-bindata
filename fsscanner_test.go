@@ -21,7 +21,7 @@ func TestScan(t *testing.T) {
 		cwd: cwd,
 	}
 
-	scanner := NewFSScanner(cfg)
+	scanner := newFSScanner(cfg)
 
 	cases := []struct {
 		desc      string
@@ -421,7 +421,7 @@ func TestScanAbsoluteSymlink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	scanner := NewFSScanner(cfg)
+	scanner := newFSScanner(cfg)
 	err = scanner.Scan(tmpDir, "", true)
 	if err != nil {
 		t.Fatal(err)

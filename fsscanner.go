@@ -11,17 +11,17 @@ import (
 	"sort"
 )
 
-// ByName implement sort.Interface for []os.FileInfo based on Name()
-type ByName []os.FileInfo
+// byName implement sort.Interface for []os.FileInfo based on Name()
+type byName []os.FileInfo
 
-func (v ByName) Len() int           { return len(v) }
-func (v ByName) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
-func (v ByName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
+func (v byName) Len() int           { return len(v) }
+func (v byName) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
+func (v byName) Less(i, j int) bool { return v[i].Name() < v[j].Name() }
 
 //
-// FSScanner implement the file system scanner.
+// fsScanner implement the file system scanner.
 //
-type FSScanner struct {
+type fsScanner struct {
 	cfg         *Config
 	knownFuncs  map[string]int
 	visitedDirs map[string]bool
@@ -30,10 +30,10 @@ type FSScanner struct {
 }
 
 //
-// NewFSScanner will create and initialize new file system scanner.
+// newFSScanner will create and initialize new file system scanner.
 //
-func NewFSScanner(cfg *Config) (fss *FSScanner) {
-	fss = &FSScanner{
+func newFSScanner(cfg *Config) (fss *fsScanner) {
+	fss = &fsScanner{
 		cfg: cfg,
 	}
 
@@ -45,7 +45,7 @@ func NewFSScanner(cfg *Config) (fss *FSScanner) {
 //
 // Reset will clear all previous mapping and assets.
 //
-func (fss *FSScanner) Reset() {
+func (fss *fsScanner) Reset() {
 	fss.knownFuncs = make(map[string]int)
 	fss.visitedDirs = make(map[string]bool)
 	fss.assets = make(map[string]*asset, 0)
@@ -58,7 +58,7 @@ func (fss *FSScanner) Reset() {
 // (2) false, if `path` is matched with one of include-pattern,
 // (3) true, if include-pattern is defined but no matched found.
 //
-func (fss *FSScanner) isIgnored(path string) bool {
+func (fss *fsScanner) isIgnored(path string) bool {
 	// (1)
 	for _, re := range fss.cfg.Ignore {
 		if re.MatchString(path) {
@@ -77,7 +77,7 @@ func (fss *FSScanner) isIgnored(path string) bool {
 	return len(fss.cfg.Include) > 0
 }
 
-func (fss *FSScanner) cleanPrefix(path string) string {
+func (fss *fsScanner) cleanPrefix(path string) string {
 	if fss.cfg.Prefix == nil {
 		return path
 	}
@@ -90,7 +90,7 @@ func (fss *FSScanner) cleanPrefix(path string) string {
 // path can be a directory or file. Realpath reference to the original path if
 // path is symlink, if path is not symlink then path and realPath will be equal.
 //
-func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
+func (fss *fsScanner) addAsset(path, realPath string, fi os.FileInfo) {
 	name := fss.cleanPrefix(path)
 
 	asset := newAsset(path, name, realPath, fi)
@@ -126,7 +126,7 @@ func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 // (2) read all files inside directory into list, and
 // (3) sort the list to make output stable between invocations.
 //
-func (fss *FSScanner) getListFileInfo(path string) (
+func (fss *fsScanner) getListFileInfo(path string) (
 	list []os.FileInfo, err error,
 ) {
 	// (1)
@@ -151,7 +151,7 @@ func (fss *FSScanner) getListFileInfo(path string) (
 	}
 
 	// (3)
-	sort.Sort(ByName(list))
+	sort.Sort(byName(list))
 
 	return
 }
@@ -160,7 +160,7 @@ func (fss *FSScanner) getListFileInfo(path string) (
 // scanSymlink reads the real-path from symbolic link file and converts the path
 // and real-path into a relative path.
 //
-func (fss *FSScanner) scanSymlink(path string, recursive bool) (
+func (fss *fsScanner) scanSymlink(path string, recursive bool) (
 	err error,
 ) {
 	realPath, err := filepath.EvalSymlinks(path)
@@ -211,7 +211,7 @@ func (fss *FSScanner) scanSymlink(path string, recursive bool) (
 //
 // Scan will scan the file or content of directory in `path`.
 //
-func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
+func (fss *fsScanner) Scan(path, realPath string, recursive bool) (err error) {
 	path = filepath.Clean(path)
 
 	if fss.isIgnored(path) {

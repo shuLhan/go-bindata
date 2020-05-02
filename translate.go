@@ -23,7 +23,7 @@ func Translate(c *Config) (err error) {
 		return
 	}
 
-	scanner := NewFSScanner(c)
+	scanner := newFSScanner(c)
 
 	assets := make(map[string]*asset, 0)
 
