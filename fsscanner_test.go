@@ -27,18 +27,18 @@ func TestScan(t *testing.T) {
 		desc      string
 		inputs    []*InputConfig
 		expError  error
-		expAssets map[string]Asset
+		expAssets map[string]*asset
 	}{{
 		desc: "With single file",
 		inputs: []*InputConfig{{
 			Path:      "./testdata/symlinkSrc/file1",
 			Recursive: false,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 		},
 	}, {
@@ -47,26 +47,26 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkSrc",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 		},
 	}, {
@@ -76,11 +76,11 @@ func TestScan(t *testing.T) {
 		}, {
 			Path: "./testdata/in/a/test.asset",
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/in/a/test.asset": {
-				Path: "testdata/in/a/test.asset",
-				Name: "testdata/in/a/test.asset",
-				Func: "bindataTestdataInATestasset",
+				path:     "testdata/in/a/test.asset",
+				name:     "testdata/in/a/test.asset",
+				funcName: "bindataTestdataInATestasset",
 			},
 		},
 	}, {
@@ -89,11 +89,11 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkFile",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkFile/file1": {
-				Path: "testdata/symlinkFile/file1",
-				Name: "testdata/symlinkFile/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkFile/file1",
+				name:     "testdata/symlinkFile/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 		},
 	}, {
@@ -105,31 +105,31 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkFile",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 			"testdata/symlinkFile/file1": {
-				Path: "testdata/symlinkFile/file1",
-				Name: "testdata/symlinkFile/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkFile/file1",
+				name:     "testdata/symlinkFile/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 		},
 	}, {
@@ -141,31 +141,31 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkSrc",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkFile/file1": {
-				Path: "testdata/symlinkFile/file1",
-				Name: "testdata/symlinkFile/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkFile/file1",
+				name:     "testdata/symlinkFile/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 		},
 	}, {
@@ -177,46 +177,46 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkSrc",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkParent/symlinkTarget/file1": {
-				Path: "testdata/symlinkParent/symlinkTarget/file1",
-				Name: "testdata/symlinkParent/symlinkTarget/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkParent/symlinkTarget/file1",
+				name:     "testdata/symlinkParent/symlinkTarget/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkParent/symlinkTarget/file2": {
-				Path: "testdata/symlinkParent/symlinkTarget/file2",
-				Name: "testdata/symlinkParent/symlinkTarget/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkParent/symlinkTarget/file2",
+				name:     "testdata/symlinkParent/symlinkTarget/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkParent/symlinkTarget/file3": {
-				Path: "testdata/symlinkParent/symlinkTarget/file3",
-				Name: "testdata/symlinkParent/symlinkTarget/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkParent/symlinkTarget/file3",
+				name:     "testdata/symlinkParent/symlinkTarget/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkParent/symlinkTarget/file4": {
-				Path: "testdata/symlinkParent/symlinkTarget/file4",
-				Name: "testdata/symlinkParent/symlinkTarget/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkParent/symlinkTarget/file4",
+				name:     "testdata/symlinkParent/symlinkTarget/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 		},
 	}, {
@@ -228,46 +228,46 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkParent",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 			"testdata/symlinkParent/symlinkTarget/file1": {
-				Path: "testdata/symlinkParent/symlinkTarget/file1",
-				Name: "testdata/symlinkParent/symlinkTarget/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkParent/symlinkTarget/file1",
+				name:     "testdata/symlinkParent/symlinkTarget/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkParent/symlinkTarget/file2": {
-				Path: "testdata/symlinkParent/symlinkTarget/file2",
-				Name: "testdata/symlinkParent/symlinkTarget/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkParent/symlinkTarget/file2",
+				name:     "testdata/symlinkParent/symlinkTarget/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkParent/symlinkTarget/file3": {
-				Path: "testdata/symlinkParent/symlinkTarget/file3",
-				Name: "testdata/symlinkParent/symlinkTarget/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkParent/symlinkTarget/file3",
+				name:     "testdata/symlinkParent/symlinkTarget/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkParent/symlinkTarget/file4": {
-				Path: "testdata/symlinkParent/symlinkTarget/file4",
-				Name: "testdata/symlinkParent/symlinkTarget/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkParent/symlinkTarget/file4",
+				name:     "testdata/symlinkParent/symlinkTarget/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 		},
 	}, {
@@ -279,31 +279,31 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkSrc",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkRecursiveParent/file1": {
-				Path: "testdata/symlinkRecursiveParent/file1",
-				Name: "testdata/symlinkRecursiveParent/file1",
-				Func: "bindataTestdataSymlinkRecursiveParentFile1",
+				path:     "testdata/symlinkRecursiveParent/file1",
+				name:     "testdata/symlinkRecursiveParent/file1",
+				funcName: "bindataTestdataSymlinkRecursiveParentFile1",
 			},
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 		},
 	}, {
@@ -315,31 +315,31 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/symlinkRecursiveParent",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/symlinkSrc/file1": {
-				Path: "testdata/symlinkSrc/file1",
-				Name: "testdata/symlinkSrc/file1",
-				Func: "bindataTestdataSymlinkSrcFile1",
+				path:     "testdata/symlinkSrc/file1",
+				name:     "testdata/symlinkSrc/file1",
+				funcName: "bindataTestdataSymlinkSrcFile1",
 			},
 			"testdata/symlinkSrc/file2": {
-				Path: "testdata/symlinkSrc/file2",
-				Name: "testdata/symlinkSrc/file2",
-				Func: "bindataTestdataSymlinkSrcFile2",
+				path:     "testdata/symlinkSrc/file2",
+				name:     "testdata/symlinkSrc/file2",
+				funcName: "bindataTestdataSymlinkSrcFile2",
 			},
 			"testdata/symlinkSrc/file3": {
-				Path: "testdata/symlinkSrc/file3",
-				Name: "testdata/symlinkSrc/file3",
-				Func: "bindataTestdataSymlinkSrcFile3",
+				path:     "testdata/symlinkSrc/file3",
+				name:     "testdata/symlinkSrc/file3",
+				funcName: "bindataTestdataSymlinkSrcFile3",
 			},
 			"testdata/symlinkSrc/file4": {
-				Path: "testdata/symlinkSrc/file4",
-				Name: "testdata/symlinkSrc/file4",
-				Func: "bindataTestdataSymlinkSrcFile4",
+				path:     "testdata/symlinkSrc/file4",
+				name:     "testdata/symlinkSrc/file4",
+				funcName: "bindataTestdataSymlinkSrcFile4",
 			},
 			"testdata/symlinkRecursiveParent/file1": {
-				Path: "testdata/symlinkRecursiveParent/file1",
-				Name: "testdata/symlinkRecursiveParent/file1",
-				Func: "bindataTestdataSymlinkRecursiveParentFile1",
+				path:     "testdata/symlinkRecursiveParent/file1",
+				name:     "testdata/symlinkRecursiveParent/file1",
+				funcName: "bindataTestdataSymlinkRecursiveParentFile1",
 			},
 		},
 	}, {
@@ -348,16 +348,16 @@ func TestScan(t *testing.T) {
 			Path:      "./testdata/dupname",
 			Recursive: true,
 		}},
-		expAssets: map[string]Asset{
+		expAssets: map[string]*asset{
 			"testdata/dupname/foo/bar": {
-				Path: "testdata/dupname/foo/bar",
-				Name: "testdata/dupname/foo/bar",
-				Func: "bindataTestdataDupnameFooBar",
+				path:     "testdata/dupname/foo/bar",
+				name:     "testdata/dupname/foo/bar",
+				funcName: "bindataTestdataDupnameFooBar",
 			},
 			"testdata/dupname/foo_bar": {
-				Path: "testdata/dupname/foo_bar",
-				Name: "testdata/dupname/foo_bar",
-				Func: "bindataTestdataDupnameFoobar",
+				path:     "testdata/dupname/foo_bar",
+				name:     "testdata/dupname/foo_bar",
+				funcName: "bindataTestdataDupnameFoobar",
 			}},
 	}}
 
@@ -366,7 +366,7 @@ func TestScan(t *testing.T) {
 
 		scanner.Reset()
 
-		assets := make(map[string]Asset, len(c.expAssets))
+		assets := make(map[string]*asset, len(c.expAssets))
 
 		for _, in := range c.inputs {
 			err = scanner.Scan(in.Path, "", in.Recursive)
@@ -431,11 +431,11 @@ func TestScanAbsoluteSymlink(t *testing.T) {
 		t.Fatalf("Expected exactly 1 asset but got %d", len(scanner.assets))
 	}
 
-	var actual Asset
+	var actual *asset
 	for _, asset := range scanner.assets {
 		actual = asset
 	}
 
-	assert(t, link, actual.Path, true)
-	assert(t, link, actual.Name, true)
+	assert(t, link, actual.path, true)
+	assert(t, link, actual.name, true)
 }

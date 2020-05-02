@@ -25,7 +25,7 @@ type FSScanner struct {
 	cfg         *Config
 	knownFuncs  map[string]int
 	visitedDirs map[string]bool
-	assets      map[string]Asset
+	assets      map[string]*asset
 	depth       int
 }
 
@@ -48,7 +48,7 @@ func NewFSScanner(cfg *Config) (fss *FSScanner) {
 func (fss *FSScanner) Reset() {
 	fss.knownFuncs = make(map[string]int)
 	fss.visitedDirs = make(map[string]bool)
-	fss.assets = make(map[string]Asset, 0)
+	fss.assets = make(map[string]*asset, 0)
 	fss.depth = 0
 }
 
@@ -93,7 +93,7 @@ func (fss *FSScanner) cleanPrefix(path string) string {
 func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 	name := fss.cleanPrefix(path)
 
-	asset := NewAsset(path, name, realPath, fi)
+	asset := newAsset(path, name, realPath, fi)
 
 	// Check if the asset's name is already exist.
 	_, ok := fss.assets[name]
@@ -104,12 +104,12 @@ func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 		return
 	}
 
-	num, ok := fss.knownFuncs[asset.Func]
+	num, ok := fss.knownFuncs[asset.funcName]
 	if ok {
-		fss.knownFuncs[asset.Func] = num + 1
-		asset.Func = fmt.Sprintf("%s_%d", asset.Func, num)
+		fss.knownFuncs[asset.funcName] = num + 1
+		asset.funcName = fmt.Sprintf("%s_%d", asset.funcName, num)
 	} else {
-		fss.knownFuncs[asset.Func] = 2
+		fss.knownFuncs[asset.funcName] = 2
 	}
 
 	if fss.cfg.Verbose {

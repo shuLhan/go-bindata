@@ -25,7 +25,7 @@ func Translate(c *Config) (err error) {
 
 	scanner := NewFSScanner(c)
 
-	assets := make(map[string]Asset, 0)
+	assets := make(map[string]*asset, 0)
 
 	// Locate all the assets.
 	for _, input := range c.Input {

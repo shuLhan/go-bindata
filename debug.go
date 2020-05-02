@@ -11,12 +11,12 @@ import (
 )
 
 // writeOneFileDebug writes the debug code file for each file (when splited file).
-func writeOneFileDebug(w io.Writer, c *Config, a *Asset) error {
+func writeOneFileDebug(w io.Writer, c *Config, ast *asset) error {
 	if err := writeDebugFileHeader(w, c.Dev); err != nil {
 		return err
 	}
 
-	if err := writeDebugAsset(w, c, a); err != nil {
+	if err := writeDebugAsset(w, c, ast); err != nil {
 		return err
 	}
 
@@ -24,14 +24,14 @@ func writeOneFileDebug(w io.Writer, c *Config, a *Asset) error {
 }
 
 // writeDebug writes the debug code file for single file.
-func writeDebug(w io.Writer, c *Config, toc map[string]Asset) error {
+func writeDebug(w io.Writer, c *Config, toc map[string]*asset) error {
 	err := writeDebugHeader(w)
 	if err != nil {
 		return err
 	}
 
-	for _, asset := range toc {
-		err = writeDebugAsset(w, c, &asset)
+	for _, ast := range toc {
+		err = writeDebugAsset(w, c, ast)
 		if err != nil {
 			return err
 		}
@@ -91,10 +91,10 @@ type asset struct {
 // writeDebugAsset write a debug entry for the given asset.
 // A debug entry is simply a function which reads the asset from
 // the original file (e.g.: from disk).
-func writeDebugAsset(w io.Writer, c *Config, asset *Asset) error {
-	pathExpr := fmt.Sprintf("%q", filepath.Join(c.cwd, asset.Path))
+func writeDebugAsset(w io.Writer, c *Config, ast *asset) error {
+	pathExpr := fmt.Sprintf("%q", filepath.Join(c.cwd, ast.path))
 	if c.Dev {
-		pathExpr = fmt.Sprintf("filepath.Join(rootDir, %q)", asset.Name)
+		pathExpr = fmt.Sprintf("filepath.Join(rootDir, %q)", ast.name)
 	}
 
 	_, err := fmt.Fprintf(w, `// %s reads file data from disk. It returns an error on failure.
@@ -115,6 +115,6 @@ func %s() (*asset, error) {
 	return a, err
 }
 
-`, asset.Func, asset.Func, pathExpr, asset.Name)
+`, ast.funcName, ast.funcName, pathExpr, ast.name)
 	return err
 }

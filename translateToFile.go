@@ -11,7 +11,7 @@ import (
 )
 
 // translateToFile generates one single file
-func translateToFile(c *Config, toc map[string]Asset) (err error) {
+func translateToFile(c *Config, toc map[string]*asset) (err error) {
 	// Create output file.
 	fd, err := os.Create(c.Output)
 	if err != nil {

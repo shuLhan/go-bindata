@@ -16,30 +16,29 @@ import (
 )
 
 // writeOneFileRelease writes the release code file for each file (when splited file).
-func writeOneFileRelease(w io.Writer, c *Config, a *Asset) (err error) {
+func writeOneFileRelease(w io.Writer, c *Config, ast *asset) (err error) {
 	_, err = fmt.Fprint(w, tmplImport)
 	if err != nil {
 		return
 	}
 
-	return writeReleaseAsset(w, c, a)
+	return writeReleaseAsset(w, c, ast)
 }
 
 // writeRelease writes the release code file for single file.
-func writeRelease(w io.Writer, c *Config, toc map[string]Asset) (err error) {
+func writeRelease(w io.Writer, c *Config, toc map[string]*asset) (err error) {
 	err = writeReleaseHeader(w, c)
 	if err != nil {
-		return
+		return err
 	}
 
-	for _, asset := range toc {
-		err = writeReleaseAsset(w, c, &asset)
+	for _, ast := range toc {
+		err = writeReleaseAsset(w, c, ast)
 		if err != nil {
-			return
+			return err
 		}
 	}
-
-	return
+	return nil
 }
 
 // writeReleaseHeader writes output file headers.
@@ -64,29 +63,29 @@ func writeReleaseHeader(w io.Writer, c *Config) (err error) {
 
 	_, err = fmt.Fprint(w, tmplReleaseHeader)
 
-	return
+	return err
 }
 
 // writeReleaseAsset write a release entry for the given asset.
 // A release entry is a function which embeds and returns
 // the file's byte content.
-func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) (err error) {
-	fd, err := os.Open(asset.Path)
+func writeReleaseAsset(w io.Writer, c *Config, ast *asset) (err error) {
+	fd, err := os.Open(ast.path)
 	if err != nil {
 		return
 	}
 
 	if c.NoCompress {
 		if c.NoMemCopy {
-			err = nocompressNomemcopy(w, asset, fd)
+			err = nocompressNomemcopy(w, ast, fd)
 		} else {
-			err = nocompressMemcopy(w, asset, fd)
+			err = nocompressMemcopy(w, ast, fd)
 		}
 	} else {
 		if c.NoMemCopy {
-			err = compressNomemcopy(w, asset, fd)
+			err = compressNomemcopy(w, ast, fd)
 		} else {
-			err = compressMemcopy(w, asset, fd)
+			err = compressMemcopy(w, ast, fd)
 		}
 	}
 	if err != nil {
@@ -99,7 +98,7 @@ func writeReleaseAsset(w io.Writer, c *Config, asset *Asset) (err error) {
 		return
 	}
 
-	return assetReleaseCommon(w, c, asset)
+	return assetReleaseCommon(w, c, ast)
 }
 
 //nolint: gochecknoglobals
@@ -155,8 +154,8 @@ func sanitizeChunks(buf *bytes.Buffer, chunks [][]byte) {
 	buf.WriteString("`")
 }
 
-func compressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, `var _%s = "`, asset.Func)
+func compressNomemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
+	_, err = fmt.Fprintf(w, `var _%s = "`, ast.funcName)
 	if err != nil {
 		return
 	}
@@ -173,14 +172,14 @@ func compressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 		return
 	}
 
-	_, err = fmt.Fprintf(w, tmplFuncCompressNomemcopy, asset.Func,
-		asset.Func, asset.Name)
+	_, err = fmt.Fprintf(w, tmplFuncCompressNomemcopy, ast.funcName,
+		ast.funcName, ast.name)
 
 	return
 }
 
-func compressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, `var _%s = []byte("`, asset.Func)
+func compressMemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
+	_, err = fmt.Fprintf(w, `var _%s = []byte("`, ast.funcName)
 	if err != nil {
 		return err
 	}
@@ -197,14 +196,14 @@ func compressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 		return
 	}
 
-	_, err = fmt.Fprintf(w, tmplFuncCompressMemcopy, asset.Func,
-		asset.Func, asset.Name)
+	_, err = fmt.Fprintf(w, tmplFuncCompressMemcopy, ast.funcName,
+		ast.funcName, ast.name)
 
 	return
 }
 
-func nocompressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, `var _%s = "`, asset.Func)
+func nocompressNomemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
+	_, err = fmt.Fprintf(w, `var _%s = "`, ast.funcName)
 	if err != nil {
 		return
 	}
@@ -214,14 +213,14 @@ func nocompressNomemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 		return
 	}
 
-	_, err = fmt.Fprintf(w, tmplFuncNocompressNomemcopy, asset.Func,
-		asset.Func, asset.Name)
+	_, err = fmt.Fprintf(w, tmplFuncNocompressNomemcopy, ast.funcName,
+		ast.funcName, ast.name)
 
 	return
 }
 
-func nocompressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
-	_, err = fmt.Fprintf(w, `var _%s = []byte(`, asset.Func)
+func nocompressMemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
+	_, err = fmt.Fprintf(w, `var _%s = []byte(`, ast.funcName)
 	if err != nil {
 		return
 	}
@@ -240,15 +239,15 @@ func nocompressMemcopy(w io.Writer, asset *Asset, r io.Reader) (err error) {
 		return
 	}
 
-	_, err = fmt.Fprintf(w, tmplFuncNocompressMemcopy, asset.Func,
-		asset.Func)
+	_, err = fmt.Fprintf(w, tmplFuncNocompressMemcopy, ast.funcName,
+		ast.funcName)
 
 	return
 }
 
 // nolint: gas
-func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
-	fi, err := os.Stat(asset.Path)
+func assetReleaseCommon(w io.Writer, c *Config, ast *asset) (err error) {
+	fi, err := os.Stat(ast.path)
 	if err != nil {
 		return err
 	}
@@ -272,7 +271,7 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 	if c.MD5Checksum {
 		var buf []byte
 
-		buf, err = ioutil.ReadFile(asset.Path)
+		buf, err = ioutil.ReadFile(ast.path)
 		if err != nil {
 			return err
 		}
@@ -284,8 +283,8 @@ func assetReleaseCommon(w io.Writer, c *Config, asset *Asset) (err error) {
 		md5checksum = fmt.Sprintf("%x", h.Sum(nil))
 	}
 
-	_, err = fmt.Fprintf(w, tmplReleaseCommon, asset.Func, asset.Func,
-		asset.Name, size, md5checksum, mode, modTime)
+	_, err = fmt.Fprintf(w, tmplReleaseCommon, ast.funcName, ast.funcName,
+		ast.name, size, md5checksum, mode, modTime)
 
 	return err
 }

@@ -12,13 +12,13 @@ import (
 )
 
 // translateToDir generates splited file
-func translateToDir(c *Config, toc map[string]Asset) error {
+func translateToDir(c *Config, toc map[string]*asset) error {
 	if err := generateCommonFile(c, toc); err != nil {
 		return err
 	}
 
-	for _, asset := range toc {
-		if err := generateOneAsset(c, &asset); err != nil {
+	for _, ast := range toc {
+		if err := generateOneAsset(c, ast); err != nil {
 			return err
 		}
 	}
@@ -26,7 +26,7 @@ func translateToDir(c *Config, toc map[string]Asset) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc map[string]Asset) (err error) {
+func generateCommonFile(c *Config, toc map[string]*asset) (err error) {
 	// Create output file.
 	out := filepath.Join(c.Output, DefOutputName)
 	fd, err := os.Create(out)
@@ -82,9 +82,9 @@ out:
 	return flushAndClose(fd, bfd, err)
 }
 
-func generateOneAsset(c *Config, a *Asset) (err error) {
+func generateOneAsset(c *Config, ast *asset) (err error) {
 	// Create output file.
-	out := filepath.Join(c.Output, a.Func+".go")
+	out := filepath.Join(c.Output, ast.funcName+".go")
 	fd, err := os.Create(out)
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func generateOneAsset(c *Config, a *Asset) (err error) {
 		goto out
 	}
 
-	if _, err = fmt.Fprintln(bfd, a.Path); err != nil {
+	if _, err = fmt.Fprintln(bfd, ast.path); err != nil {
 		goto out
 	}
 
@@ -126,9 +126,9 @@ func generateOneAsset(c *Config, a *Asset) (err error) {
 
 	// Write assets.
 	if c.Debug || c.Dev {
-		err = writeOneFileDebug(bfd, c, a)
+		err = writeOneFileDebug(bfd, c, ast)
 	} else {
-		err = writeOneFileRelease(bfd, c, a)
+		err = writeOneFileRelease(bfd, c, ast)
 	}
 out:
 	return flushAndClose(fd, bfd, err)
