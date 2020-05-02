@@ -11,13 +11,13 @@ import (
 const lowerHex = "0123456789abcdef"
 
 //
-// StringWriter define a writer to write content of file.
+// stringWriter define a writer to write content of file.
 //
-type StringWriter struct {
+type stringWriter struct {
 	io.Writer
 }
 
-func (w *StringWriter) Write(p []byte) (n int, err error) {
+func (w *stringWriter) Write(p []byte) (n int, err error) {
 	if len(p) == 0 {
 		return
 	}

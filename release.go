@@ -160,7 +160,7 @@ func compressNomemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
 		return
 	}
 
-	gz := gzip.NewWriter(&StringWriter{Writer: w})
+	gz := gzip.NewWriter(&stringWriter{Writer: w})
 	_, err = io.Copy(gz, r)
 	if err != nil {
 		_ = gz.Close()
@@ -184,7 +184,7 @@ func compressMemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
 		return err
 	}
 
-	gz := gzip.NewWriter(&StringWriter{Writer: w})
+	gz := gzip.NewWriter(&stringWriter{Writer: w})
 	_, err = io.Copy(gz, r)
 	if err != nil {
 		_ = gz.Close()
@@ -208,7 +208,7 @@ func nocompressNomemcopy(w io.Writer, ast *asset, r io.Reader) (err error) {
 		return
 	}
 
-	_, err = io.Copy(&StringWriter{Writer: w}, r)
+	_, err = io.Copy(&stringWriter{Writer: w}, r)
 	if err != nil {
 		return
 	}
