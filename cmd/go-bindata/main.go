@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strings"
 
 	"github.com/shuLhan/go-bindata"
 )
@@ -167,7 +166,7 @@ func parseArgs() (err error) {
 	// Create input configurations.
 	cfg.Input = make([]bindata.InputConfig, flag.NArg())
 	for i := range cfg.Input {
-		cfg.Input[i] = parseInput(flag.Arg(i))
+		cfg.Input[i] = bindata.CreateInputConfig(flag.Arg(i))
 	}
 
 	return
@@ -239,24 +238,4 @@ func parseOutputPkg() {
 			cfg.Package = pkg
 		}
 	}
-}
-
-//
-// parseInput determines whether the given path has a recursive indicator
-// ("/...") and returns a new path with the recursive indicator chopped off if
-// it does.
-//
-//  ex:
-//      /path/to/foo/...    -> (/path/to/foo, true)
-//      /path/to/bar        -> (/path/to/bar, false)
-//
-func parseInput(path string) (inputConfig bindata.InputConfig) {
-	if strings.HasSuffix(path, "/...") {
-		inputConfig.Path = filepath.Clean(path[:len(path)-4])
-		inputConfig.Recursive = true
-	} else {
-		inputConfig.Path = filepath.Clean(path)
-	}
-
-	return
 }

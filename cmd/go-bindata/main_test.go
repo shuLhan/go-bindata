@@ -90,9 +90,9 @@ func TestParseArgs(t *testing.T) {
 			Output:  defConfig.Output,
 			Package: "main",
 			Prefix:  regexp.MustCompile("prefix/*/to/be/removed"),
-			Input: []bindata.InputConfig{{
-				Path: argInputPath,
-			}},
+			Input: []bindata.InputConfig{
+				bindata.CreateInputConfig(argInputPath),
+			},
 			Ignore:  defConfig.Ignore,
 			Include: defConfig.Include,
 		},
@@ -106,9 +106,9 @@ func TestParseArgs(t *testing.T) {
 		expConfig: &bindata.Config{
 			Output:  defConfig.Output,
 			Package: argPkg,
-			Input: []bindata.InputConfig{{
-				Path: argInputPath,
-			}},
+			Input: []bindata.InputConfig{
+				bindata.CreateInputConfig(argInputPath),
+			},
 			Ignore:  defConfig.Ignore,
 			Include: defConfig.Include,
 		},
@@ -122,9 +122,9 @@ func TestParseArgs(t *testing.T) {
 		expConfig: &bindata.Config{
 			Output:  argOutFile,
 			Package: argOutPkg,
-			Input: []bindata.InputConfig{{
-				Path: argInputPath,
-			}},
+			Input: []bindata.InputConfig{
+				bindata.CreateInputConfig(argInputPath),
+			},
 			Ignore:  defConfig.Ignore,
 			Include: defConfig.Include,
 		},
@@ -140,9 +140,9 @@ func TestParseArgs(t *testing.T) {
 		expConfig: &bindata.Config{
 			Output:  argOutFile,
 			Package: argPkg,
-			Input: []bindata.InputConfig{{
-				Path: argInputPath,
-			}},
+			Input: []bindata.InputConfig{
+				bindata.CreateInputConfig(argInputPath),
+			},
 			Ignore:  defConfig.Ignore,
 			Include: defConfig.Include,
 		},
@@ -166,34 +166,5 @@ func TestParseArgs(t *testing.T) {
 		}
 
 		assert(t, test.expConfig, cfg, true)
-	}
-}
-
-func TestParseInput(t *testing.T) {
-	tests := []struct {
-		desc string
-		path string
-		exp  bindata.InputConfig
-	}{{
-		desc: `With suffix /...`,
-		path: `./...`,
-		exp: bindata.InputConfig{
-			Path:      `.`,
-			Recursive: true,
-		},
-	}, {
-		desc: `Without suffix /...`,
-		path: `.`,
-		exp: bindata.InputConfig{
-			Path: `.`,
-		},
-	}}
-
-	for _, test := range tests {
-		t.Log(test.desc)
-
-		got := parseInput(test.path)
-
-		assert(t, test.exp, got, true)
 	}
 }

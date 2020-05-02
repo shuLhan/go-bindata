@@ -27,17 +27,6 @@ var (
 	ErrCWD           = errors.New("unable to determine current working directory")
 )
 
-// InputConfig defines options on an asset directory to be convert.
-type InputConfig struct {
-	// Path defines a directory containing asset files to be included
-	// in the generated output.
-	Path string
-
-	// Recusive defines whether subdirectories of Path
-	// should be recursively included in the conversion.
-	Recursive bool
-}
-
 // Config defines a set of options for the asset conversion.
 type Config struct {
 	// cwd contains current working directory.
