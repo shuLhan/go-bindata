@@ -24,14 +24,14 @@ func writeOneFileDebug(w io.Writer, c *Config, a *Asset) error {
 }
 
 // writeDebug writes the debug code file for single file.
-func writeDebug(w io.Writer, c *Config, toc []Asset) error {
+func writeDebug(w io.Writer, c *Config, toc map[string]Asset) error {
 	err := writeDebugHeader(w)
 	if err != nil {
 		return err
 	}
 
-	for i := range toc {
-		err = writeDebugAsset(w, c, &toc[i])
+	for _, asset := range toc {
+		err = writeDebugAsset(w, c, &asset)
 		if err != nil {
 			return err
 		}

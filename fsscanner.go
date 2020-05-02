@@ -25,8 +25,8 @@ type FSScanner struct {
 	cfg         *Config
 	knownFuncs  map[string]int
 	visitedDirs map[string]bool
-	assets      []Asset
-	isFirstTime bool
+	assets      map[string]Asset
+	depth       int
 }
 
 //
@@ -34,8 +34,7 @@ type FSScanner struct {
 //
 func NewFSScanner(cfg *Config) (fss *FSScanner) {
 	fss = &FSScanner{
-		cfg:         cfg,
-		isFirstTime: true,
+		cfg: cfg,
 	}
 
 	fss.Reset()
@@ -49,7 +48,8 @@ func NewFSScanner(cfg *Config) (fss *FSScanner) {
 func (fss *FSScanner) Reset() {
 	fss.knownFuncs = make(map[string]int)
 	fss.visitedDirs = make(map[string]bool)
-	fss.assets = make([]Asset, 0)
+	fss.assets = make(map[string]Asset, 0)
+	fss.depth = 0
 }
 
 //
@@ -95,6 +95,15 @@ func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 
 	asset := NewAsset(path, name, realPath, fi)
 
+	// Check if the asset's name is already exist.
+	_, ok := fss.assets[name]
+	if ok {
+		if fss.cfg.Verbose {
+			fmt.Printf("= %+v\n", path)
+		}
+		return
+	}
+
 	num, ok := fss.knownFuncs[asset.Func]
 	if ok {
 		fss.knownFuncs[asset.Func] = num + 1
@@ -107,7 +116,7 @@ func (fss *FSScanner) addAsset(path, realPath string, fi os.FileInfo) {
 		fmt.Printf("+ %+v\n", path)
 	}
 
-	fss.assets = append(fss.assets, asset)
+	fss.assets[name] = asset
 }
 
 //
@@ -170,7 +179,10 @@ func (fss *FSScanner) scanSymlink(path string, recursive bool) (
 	}
 
 	if !recursive {
-		return nil
+		if fss.depth > 0 {
+			return nil
+		}
+		fss.depth++
 	}
 
 	_, ok := fss.visitedDirs[realPath]
@@ -223,11 +235,11 @@ func (fss *FSScanner) Scan(path, realPath string, recursive bool) (err error) {
 		return nil
 	}
 
-	if fss.isFirstTime {
-		fss.isFirstTime = false
-	}
 	if !recursive {
-		return nil
+		if fss.depth > 0 {
+			return nil
+		}
+		fss.depth++
 	}
 
 	_, ok := fss.visitedDirs[path]

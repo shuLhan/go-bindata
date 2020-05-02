@@ -12,13 +12,13 @@ import (
 )
 
 // translateToDir generates splited file
-func translateToDir(c *Config, toc []Asset) error {
+func translateToDir(c *Config, toc map[string]Asset) error {
 	if err := generateCommonFile(c, toc); err != nil {
 		return err
 	}
 
-	for i := range toc {
-		if err := generateOneAsset(c, &toc[i]); err != nil {
+	for _, asset := range toc {
+		if err := generateOneAsset(c, &asset); err != nil {
 			return err
 		}
 	}
@@ -26,7 +26,7 @@ func translateToDir(c *Config, toc []Asset) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc []Asset) (err error) {
+func generateCommonFile(c *Config, toc map[string]Asset) (err error) {
 	// Create output file.
 	out := filepath.Join(c.Output, DefOutputName)
 	fd, err := os.Create(out)

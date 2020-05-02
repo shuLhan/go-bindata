@@ -26,14 +26,14 @@ func writeOneFileRelease(w io.Writer, c *Config, a *Asset) (err error) {
 }
 
 // writeRelease writes the release code file for single file.
-func writeRelease(w io.Writer, c *Config, toc []Asset) (err error) {
+func writeRelease(w io.Writer, c *Config, toc map[string]Asset) (err error) {
 	err = writeReleaseHeader(w, c)
 	if err != nil {
 		return
 	}
 
-	for i := range toc {
-		err = writeReleaseAsset(w, c, &toc[i])
+	for _, asset := range toc {
+		err = writeReleaseAsset(w, c, &asset)
 		if err != nil {
 			return
 		}

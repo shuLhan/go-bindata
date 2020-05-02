@@ -50,7 +50,7 @@ func normalize(in string) (out string) {
 
 //
 // NewAsset will create, initialize, and return new asset based on file
-// path and real path if its symlink.
+// path or real path if its symlink.
 //
 func NewAsset(path, name, realPath string, fi os.FileInfo) (a Asset) {
 	a = Asset{
