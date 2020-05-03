@@ -263,6 +263,13 @@ func (c *Config) validateOutput() (err error) {
 // Part of which means checking if certain file/directory paths exist.
 //
 func (c *Config) validate() (err error) {
+	if len(c.cwd) == 0 {
+		c.cwd, err = os.Getwd()
+		if err != nil {
+			return ErrCWD
+		}
+	}
+
 	if len(c.Package) == 0 {
 		return ErrNoPackageName
 	}

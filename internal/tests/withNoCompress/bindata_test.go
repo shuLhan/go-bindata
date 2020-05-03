@@ -1,0 +1,1 @@
+../_bindata_test.go
