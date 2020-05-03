@@ -83,7 +83,7 @@ func usage() {
 
 func version() {
 	if len(AppVersionRev) == 0 {
-		AppVersionRev = "0"
+		AppVersionRev = "2"
 	}
 
 	lout.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,

@@ -1,3 +1,28 @@
+# v3.5.2 (2020-05-03)
+
+##  Bug fixes
+
+*  Fix empty assets when running on directory without recursive (#38)
+
+   Due to hasty fixes on #36 and #37, the bug #28 reappear again in issue #38.
+
+##  Enhancements
+
+*  all: refactor the unit tests
+
+   Previous unit tests are really convoluted, its hard to read and its
+   even hard to add new tests that reflect use cases in real worlds.
+   This causes several issues reappear after fixing another issues.
+
+   This changes rewrite the unit tests by replacing test using go-bindata
+   binary with call to Translate() with custom Config depends on each unit
+   test.
+
+*  all: cleaning up API, un-export all internal types
+
+*  all: use map to collect list of assets instead of slice
+
+
 # v3.5.1 (2020-05-01)
 
 ##  Bug fixes
