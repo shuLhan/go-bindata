@@ -12,12 +12,13 @@ import (
 )
 
 // translateToDir generates splited file
-func translateToDir(c *Config, toc map[string]*asset) error {
-	if err := generateCommonFile(c, toc); err != nil {
+func translateToDir(c *Config, keys []string, toc map[string]*asset) error {
+	if err := generateCommonFile(c, keys, toc); err != nil {
 		return err
 	}
 
-	for _, ast := range toc {
+	for _, key := range keys {
+		ast := toc[key]
 		if err := generateOneAsset(c, ast); err != nil {
 			return err
 		}
@@ -26,7 +27,7 @@ func translateToDir(c *Config, toc map[string]*asset) error {
 	return nil
 }
 
-func generateCommonFile(c *Config, toc map[string]*asset) (err error) {
+func generateCommonFile(c *Config, keys []string, toc map[string]*asset) (err error) {
 	// Create output file.
 	out := filepath.Join(c.Output, DefOutputName)
 	fd, err := os.Create(out)
@@ -41,7 +42,7 @@ func generateCommonFile(c *Config, toc map[string]*asset) (err error) {
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
-	err = writeHeader(bfd, c, toc)
+	err = writeHeader(bfd, c, keys, toc)
 	if err != nil {
 		goto out
 	}
@@ -64,13 +65,13 @@ func generateCommonFile(c *Config, toc map[string]*asset) (err error) {
 	}
 
 	// Write table of contents
-	err = writeTOC(bfd, toc)
+	err = writeTOC(bfd, keys, toc)
 	if err != nil {
 		goto out
 	}
 
 	// Write hierarchical tree of assets
-	err = writeTOCTree(bfd, toc)
+	err = writeTOCTree(bfd, keys, toc)
 	if err != nil {
 		goto out
 	}

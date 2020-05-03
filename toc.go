@@ -127,13 +127,14 @@ func (root *assetTree) WriteAsGoMap(w io.Writer) (err error) {
 	return root.writeGoMap(w, 0)
 }
 
-func writeTOCTree(w io.Writer, toc map[string]*asset) error {
+func writeTOCTree(w io.Writer, keys []string, toc map[string]*asset) error {
 	_, err := fmt.Fprint(w, tmplFuncAssetDir)
 	if err != nil {
 		return err
 	}
 	tree := newAssetTree()
-	for _, ast := range toc {
+	for _, key := range keys {
+		ast := toc[key]
 		pathList := strings.Split(ast.name, "/")
 		tree.Add(pathList, ast)
 	}
@@ -144,28 +145,27 @@ func writeTOCTree(w io.Writer, toc map[string]*asset) error {
 //
 // getLongestAssetNameLen will return length of the longest asset name in toc.
 //
-func getLongestAssetNameLen(toc map[string]*asset) (longest int) {
-	for _, ast := range toc {
-		lenName := len(ast.name)
+func getLongestAssetNameLen(keys []string) (longest int) {
+	for _, key := range keys {
+		lenName := len(key)
 		if lenName > longest {
 			longest = lenName
 		}
 	}
-
-	return
+	return longest
 }
 
 // writeTOC writes the table of contents file.
-func writeTOC(w io.Writer, toc map[string]*asset) (err error) {
+func writeTOC(w io.Writer, keys []string, toc map[string]*asset) (err error) {
 	_, err = fmt.Fprint(w, tmplFuncAsset)
 	if err != nil {
 		return err
 	}
 
-	longestNameLen := getLongestAssetNameLen(toc)
+	longestNameLen := getLongestAssetNameLen(keys)
 
-	for _, ast := range toc {
-		err = writeTOCAsset(w, ast, longestNameLen)
+	for _, key := range keys {
+		err = writeTOCAsset(w, toc[key], longestNameLen)
 		if err != nil {
 			return err
 		}

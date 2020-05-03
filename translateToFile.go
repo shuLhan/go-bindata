@@ -11,7 +11,7 @@ import (
 )
 
 // translateToFile generates one single file
-func translateToFile(c *Config, toc map[string]*asset) (err error) {
+func translateToFile(c *Config, keys []string, toc map[string]*asset) (err error) {
 	// Create output file.
 	fd, err := os.Create(c.Output)
 	if err != nil {
@@ -25,7 +25,7 @@ func translateToFile(c *Config, toc map[string]*asset) (err error) {
 	// Create a buffered writer for better performance.
 	bfd := bufio.NewWriter(fd)
 
-	err = writeHeader(bfd, c, toc)
+	err = writeHeader(bfd, c, keys, toc)
 	if err != nil {
 		goto out
 	}
@@ -38,9 +38,9 @@ func translateToFile(c *Config, toc map[string]*asset) (err error) {
 
 	// Write assets.
 	if c.Debug || c.Dev {
-		err = writeDebug(bfd, c, toc)
+		err = writeDebug(bfd, c, keys, toc)
 	} else {
-		err = writeRelease(bfd, c, toc)
+		err = writeRelease(bfd, c, keys, toc)
 	}
 
 	if err != nil {
@@ -48,13 +48,13 @@ func translateToFile(c *Config, toc map[string]*asset) (err error) {
 	}
 
 	// Write table of contents
-	err = writeTOC(bfd, toc)
+	err = writeTOC(bfd, keys, toc)
 	if err != nil {
 		goto out
 	}
 
 	// Write hierarchical tree of assets
-	err = writeTOCTree(bfd, toc)
+	err = writeTOCTree(bfd, keys, toc)
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,7 @@ import (
 	"io"
 )
 
-func writeHeader(bfd io.Writer, c *Config, toc map[string]*asset) (err error) {
+func writeHeader(bfd io.Writer, c *Config, keys []string, toc map[string]*asset) (err error) {
 	// Write the header. This makes e.g. Github ignore diffs in generated files.
 	_, err = fmt.Fprint(bfd, headerGeneratedBy)
 	if err != nil {
@@ -28,7 +28,8 @@ func writeHeader(bfd io.Writer, c *Config, toc map[string]*asset) (err error) {
 			return err
 		}
 
-		for _, asset := range toc {
+		for _, key := range keys {
+			asset := toc[key]
 			_, err = fmt.Fprintf(bfd, "// %s\n", asset.path)
 			if err != nil {
 				return err

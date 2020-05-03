@@ -4,6 +4,10 @@
 
 package bindata
 
+import (
+	"sort"
+)
+
 // Translate reads assets from an input directory, converts them
 // to Go code and writes new files to the output specified
 // in the given configuration.
@@ -35,9 +39,16 @@ func Translate(c *Config) (err error) {
 		scanner.Reset()
 	}
 
-	if c.Split {
-		return translateToDir(c, assets)
+	keys := make([]string, 0, len(assets))
+	for key := range assets {
+		keys = append(keys, key)
 	}
 
-	return translateToFile(c, assets)
+	sort.Strings(keys)
+
+	if c.Split {
+		return translateToDir(c, keys, assets)
+	}
+
+	return translateToFile(c, keys, assets)
 }
