@@ -5,6 +5,8 @@
 package bindata
 
 import (
+	"bytes"
+	"io/ioutil"
 	"testing"
 )
 
@@ -23,17 +25,9 @@ func TestAsset(t *testing.T) {
 		name: "in/split/test.2",
 		exp:  "// sample file 2\n",
 	}, {
-		desc: "With valid asset",
-		name: "in/split/test.3",
-		exp:  "// sample file 3\n",
-	}, {
-		desc: "With valid asset",
-		name: "in/split/test.4",
-		exp:  "// sample file 4\n",
-	}, {
 		desc:   "With invalid asset",
-		name:   "in/split/test.5",
-		expErr: "open in/split/test.5: file does not exist",
+		name:   "in/split/test.3",
+		expErr: "open in/split/test.3: file does not exist",
 	}}
 
 	for _, test := range tests {
@@ -46,5 +40,29 @@ func TestAsset(t *testing.T) {
 		}
 
 		assert(t, test.exp, string(got), true)
+	}
+}
+
+func TestGeneratedAssets(t *testing.T) {
+	exps := []string{
+		"bindata",
+		"bindataInSplitTest1",
+		"bindataInSplitTest2",
+	}
+
+	for _, name := range exps {
+		expFile := name + ".exp"
+		gotFile := name + ".go"
+		exp, err := ioutil.ReadFile(expFile)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := ioutil.ReadFile(gotFile)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(exp, got) {
+			t.Fatalf("%q not match with %q", expFile, gotFile)
+		}
 	}
 }

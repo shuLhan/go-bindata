@@ -5,6 +5,8 @@
 package bindata
 
 import (
+	"bytes"
+	"io/ioutil"
 	"testing"
 )
 
@@ -54,5 +56,25 @@ func TestAsset(t *testing.T) {
 		}
 
 		assert(t, test.exp, string(got), true)
+	}
+}
+
+func TestGeneratedContent(t *testing.T) {
+	expFile := "bindata.exp"
+	gotFile := "bindata.go"
+
+	// Compare the generate bindata.go with expected.
+	exp, err := ioutil.ReadFile(expFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := ioutil.ReadFile(gotFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !bytes.Equal(exp, got) {
+		t.Fatalf("%s not match with %s", expFile, gotFile)
 	}
 }
