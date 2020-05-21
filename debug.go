@@ -99,6 +99,14 @@ func writeDebugAsset(w io.Writer, c *Config, ast *asset) error {
 	}
 
 	_, err := fmt.Fprintf(w, `// %s reads file data from disk. It returns an error on failure.
+func %sBytes() ([]byte, error) {
+	asset, err := %s()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
 func %s() (*asset, error) {
 	path := %s
 	name := %q
@@ -116,6 +124,6 @@ func %s() (*asset, error) {
 	return a, err
 }
 
-`, ast.funcName, ast.funcName, pathExpr, ast.name)
+`, ast.funcName, ast.funcName, ast.funcName, ast.funcName, pathExpr, ast.name)
 	return err
 }
