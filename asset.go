@@ -40,7 +40,7 @@ func normalize(in string) (out string) {
 			}
 			continue
 		}
-		if r == '/' {
+		if r == '/' || r == '.' {
 			up = true
 		}
 	}
