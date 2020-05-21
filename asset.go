@@ -51,7 +51,7 @@ func normalize(in string) (out string) {
 // newAsset will create, initialize, and return new asset based on file
 // path or real path if its symlink.
 //
-func newAsset(path, name, realPath string, fi os.FileInfo) (ast *asset) {
+func newAsset(cfg *Config, path, name, realPath string, fi os.FileInfo) (ast *asset) {
 	ast = &asset{
 		path: path,
 		name: filepath.ToSlash(name),
@@ -59,9 +59,9 @@ func newAsset(path, name, realPath string, fi os.FileInfo) (ast *asset) {
 	}
 
 	if len(realPath) == 0 {
-		ast.funcName = "bindata" + normalize(name)
+		ast.funcName = cfg.AssetPrefix + normalize(name)
 	} else {
-		ast.funcName = "bindata" + normalize(realPath)
+		ast.funcName = cfg.AssetPrefix + normalize(realPath)
 	}
 	return ast
 }

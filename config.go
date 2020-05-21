@@ -18,6 +18,9 @@ const (
 
 	// DefOutputName define default generated file name.
 	DefOutputName = "bindata.go"
+
+	// Default prefix for asset functions
+	DefAssetPrefixName = "bindata"
 )
 
 // List of errors.
@@ -50,6 +53,10 @@ type Config struct {
 	// working directory and the current directory in case of having true
 	// to `Split` config.
 	Output string
+
+	// This defines the string that is prepended to asset functions.
+	// This can be used to export these functions directly. 
+	AssetPrefix string
 
 	// Prefix defines a regular expression which should used to strip
 	// substrings from all file names when generating the keys in the table of
@@ -176,6 +183,7 @@ func NewConfig() *Config {
 	c := new(Config)
 	c.Package = DefPackageName
 	c.Output = DefOutputName
+	c.AssetPrefix = DefAssetPrefixName
 	c.Ignore = make([]*regexp.Regexp, 0)
 	c.Include = make([]*regexp.Regexp, 0)
 	return c

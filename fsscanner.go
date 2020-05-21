@@ -93,7 +93,7 @@ func (fss *fsScanner) cleanPrefix(path string) string {
 func (fss *fsScanner) addAsset(path, realPath string, fi os.FileInfo) {
 	name := fss.cleanPrefix(path)
 
-	asset := newAsset(path, name, realPath, fi)
+	asset := newAsset(fss.cfg, path, name, realPath, fi)
 
 	// Check if the asset's name is already exist.
 	_, ok := fss.assets[name]

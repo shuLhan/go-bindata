@@ -116,6 +116,7 @@ func initArgs() {
 	flag.StringVar(&cfg.Output, "o", cfg.Output, "Optional name of the output file to be generated.")
 	flag.StringVar(&cfg.Package, "pkg", cfg.Package, "Package name to use in the generated code.")
 	flag.StringVar(&cfg.Tags, "tags", cfg.Tags, "Optional set of build tags to include.")
+	flag.StringVar(&cfg.AssetPrefix, "assetprefix", cfg.AssetPrefix, "Prefix for the name of the asset function. Begin with a capital letter to export them")
 	flag.UintVar(&cfg.Mode, "mode", cfg.Mode, "Optional file mode override for all files.")
 	flag.Var((*AppendSliceValue)(&argIgnore), "ignore", "Regex pattern to ignore")
 	flag.Var((*AppendSliceValue)(&argInclude), "include", "Regex pattern to include")
