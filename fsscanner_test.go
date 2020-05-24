@@ -19,6 +19,7 @@ func TestScan(t *testing.T) {
 
 	cfg := &Config{
 		cwd: cwd,
+		AssetPrefix: "bindata",
 	}
 
 	scanner := newFSScanner(cfg)
@@ -80,7 +81,7 @@ func TestScan(t *testing.T) {
 			"testdata/in/a/test.asset": {
 				path:     "testdata/in/a/test.asset",
 				name:     "testdata/in/a/test.asset",
-				funcName: "bindataTestdataInATestasset",
+				funcName: "bindataTestdataInATestAsset",
 			},
 		},
 	}, {
@@ -402,6 +403,7 @@ func TestScanAbsoluteSymlink(t *testing.T) {
 
 	cfg := &Config{
 		cwd: cwd,
+		AssetPrefix: "bindata",
 	}
 
 	tmpDir, err := ioutil.TempDir("", "go-bindata-test")
