@@ -17,8 +17,9 @@ import (
 
 func main() {
 	cfg := &bindata.Config{
-		Package: "bindata",
-		Prefix:  regexp.MustCompile(".*/testdata/"),
+		Package:     "bindata",
+		Prefix:      regexp.MustCompile(".*/testdata/"),
+		AssetPrefix: bindata.DefAssetPrefixName,
 		Input: []bindata.InputConfig{
 			bindata.CreateInputConfig("../../../testdata/in"),
 		},

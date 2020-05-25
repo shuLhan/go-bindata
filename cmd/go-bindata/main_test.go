@@ -87,9 +87,10 @@ func TestParseArgs(t *testing.T) {
 			".",
 		},
 		expConfig: &bindata.Config{
-			Output:  defConfig.Output,
-			Package: "main",
-			Prefix:  regexp.MustCompile("prefix/*/to/be/removed"),
+			Output:      defConfig.Output,
+			Package:     "main",
+			AssetPrefix: bindata.DefAssetPrefixName,
+			Prefix:      regexp.MustCompile("prefix/*/to/be/removed"),
 			Input: []bindata.InputConfig{
 				bindata.CreateInputConfig(argInputPath),
 			},
@@ -104,8 +105,9 @@ func TestParseArgs(t *testing.T) {
 			argInputPath,
 		},
 		expConfig: &bindata.Config{
-			Output:  defConfig.Output,
-			Package: argPkg,
+			Output:      defConfig.Output,
+			Package:     argPkg,
+			AssetPrefix: bindata.DefAssetPrefixName,
 			Input: []bindata.InputConfig{
 				bindata.CreateInputConfig(argInputPath),
 			},
@@ -120,8 +122,9 @@ func TestParseArgs(t *testing.T) {
 			argInputPath,
 		},
 		expConfig: &bindata.Config{
-			Output:  argOutFile,
-			Package: argOutPkg,
+			Output:      argOutFile,
+			Package:     argOutPkg,
+			AssetPrefix: bindata.DefAssetPrefixName,
 			Input: []bindata.InputConfig{
 				bindata.CreateInputConfig(argInputPath),
 			},
@@ -129,7 +132,6 @@ func TestParseArgs(t *testing.T) {
 			Include: defConfig.Include,
 		},
 	}, {
-
 		desc: `With "-pkg ` + argPkg + ` -o ` + argOutPkg + `" (package name should be "` + argPkg + `")`,
 		args: []string{
 			"noop",
@@ -138,8 +140,9 @@ func TestParseArgs(t *testing.T) {
 			argInputPath,
 		},
 		expConfig: &bindata.Config{
-			Output:  argOutFile,
-			Package: argPkg,
+			Output:      argOutFile,
+			Package:     argPkg,
+			AssetPrefix: bindata.DefAssetPrefixName,
 			Input: []bindata.InputConfig{
 				bindata.CreateInputConfig(argInputPath),
 			},

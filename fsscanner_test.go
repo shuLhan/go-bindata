@@ -18,8 +18,8 @@ func TestScan(t *testing.T) {
 	}
 
 	cfg := &Config{
-		cwd: cwd,
-		AssetPrefix: "bindata",
+		AssetPrefix: DefAssetPrefixName,
+		cwd:         cwd,
 	}
 
 	scanner := newFSScanner(cfg)
@@ -402,7 +402,7 @@ func TestScanAbsoluteSymlink(t *testing.T) {
 	}
 
 	cfg := &Config{
-		cwd: cwd,
+		cwd:         cwd,
 		AssetPrefix: "bindata",
 	}
 

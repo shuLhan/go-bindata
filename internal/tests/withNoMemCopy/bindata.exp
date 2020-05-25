@@ -82,19 +82,19 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _bindataInATestasset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
+var _bindataInATestAsset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
 
-func bindataInATestassetBytes() ([]byte, error) {
+func bindataInATestAssetBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataInATestasset,
+		_bindataInATestAsset,
 		"in/a/test.asset",
 	)
 }
 
 
 
-func bindataInATestasset() (*asset, error) {
-	bytes, err := bindataInATestassetBytes()
+func bindataInATestAsset() (*asset, error) {
+	bytes, err := bindataInATestAssetBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -112,19 +112,19 @@ func bindataInATestasset() (*asset, error) {
 	return a, nil
 }
 
-var _bindataInBTestasset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
+var _bindataInBTestAsset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
 
-func bindataInBTestassetBytes() ([]byte, error) {
+func bindataInBTestAssetBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataInBTestasset,
+		_bindataInBTestAsset,
 		"in/b/test.asset",
 	)
 }
 
 
 
-func bindataInBTestasset() (*asset, error) {
-	bytes, err := bindataInBTestassetBytes()
+func bindataInBTestAsset() (*asset, error) {
+	bytes, err := bindataInBTestAssetBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -142,19 +142,19 @@ func bindataInBTestasset() (*asset, error) {
 	return a, nil
 }
 
-var _bindataInCTestasset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
+var _bindataInCTestAsset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
 
-func bindataInCTestassetBytes() ([]byte, error) {
+func bindataInCTestAssetBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataInCTestasset,
+		_bindataInCTestAsset,
 		"in/c/test.asset",
 	)
 }
 
 
 
-func bindataInCTestasset() (*asset, error) {
-	bytes, err := bindataInCTestassetBytes()
+func bindataInCTestAsset() (*asset, error) {
+	bytes, err := bindataInCTestAssetBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -202,19 +202,19 @@ func bindataInFilename() (*asset, error) {
 	return a, nil
 }
 
-var _bindataInTestasset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
+var _bindataInTestAsset = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\x28\x4e\xcc\x2d\xc8\x49\x55\x48\xcb\xcc\x49\xe5\x02\x04\x00\x00\xff\xff\x8a\x82\x8c\x85\x0f\x00\x00\x00"
 
-func bindataInTestassetBytes() ([]byte, error) {
+func bindataInTestAssetBytes() ([]byte, error) {
 	return bindataRead(
-		_bindataInTestasset,
+		_bindataInTestAsset,
 		"in/test.asset",
 	)
 }
 
 
 
-func bindataInTestasset() (*asset, error) {
-	bytes, err := bindataInTestassetBytes()
+func bindataInTestAsset() (*asset, error) {
+	bytes, err := bindataInTestAssetBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -296,11 +296,11 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 //
 var _bindata = map[string]func() (*asset, error){
-	"in/a/test.asset": bindataInATestasset,
-	"in/b/test.asset": bindataInBTestasset,
-	"in/c/test.asset": bindataInCTestasset,
+	"in/a/test.asset": bindataInATestAsset,
+	"in/b/test.asset": bindataInBTestAsset,
+	"in/c/test.asset": bindataInCTestAsset,
 	"in/file name":    bindataInFilename,
-	"in/test.asset":   bindataInTestasset,
+	"in/test.asset":   bindataInTestAsset,
 }
 
 //
@@ -357,16 +357,16 @@ type bintree struct {
 var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 	"in": {Func: nil, Children: map[string]*bintree{
 		"a": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInATestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInATestAsset, Children: map[string]*bintree{}},
 		}},
 		"b": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInBTestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInBTestAsset, Children: map[string]*bintree{}},
 		}},
 		"c": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInCTestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInCTestAsset, Children: map[string]*bintree{}},
 		}},
 		"file name": {Func: bindataInFilename, Children: map[string]*bintree{}},
-		"test.asset": {Func: bindataInTestasset, Children: map[string]*bintree{}},
+		"test.asset": {Func: bindataInTestAsset, Children: map[string]*bintree{}},
 	}},
 }}
 

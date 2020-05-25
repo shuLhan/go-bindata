@@ -30,8 +30,16 @@ type asset struct {
 	info  os.FileInfo
 }
 
-// bindataInATestasset reads file data from disk. It returns an error on failure.
-func bindataInATestasset() (*asset, error) {
+// bindataInATestAsset reads file data from disk. It returns an error on failure.
+func bindataInATestAssetBytes() ([]byte, error) {
+	asset, err := bindataInATestAsset()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
+func bindataInATestAsset() (*asset, error) {
 	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/a/test.asset"
 	name := "in/a/test.asset"
 	bytes, err := bindataRead(path, name)
@@ -48,8 +56,16 @@ func bindataInATestasset() (*asset, error) {
 	return a, err
 }
 
-// bindataInBTestasset reads file data from disk. It returns an error on failure.
-func bindataInBTestasset() (*asset, error) {
+// bindataInBTestAsset reads file data from disk. It returns an error on failure.
+func bindataInBTestAssetBytes() ([]byte, error) {
+	asset, err := bindataInBTestAsset()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
+func bindataInBTestAsset() (*asset, error) {
 	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/b/test.asset"
 	name := "in/b/test.asset"
 	bytes, err := bindataRead(path, name)
@@ -66,8 +82,16 @@ func bindataInBTestasset() (*asset, error) {
 	return a, err
 }
 
-// bindataInCTestasset reads file data from disk. It returns an error on failure.
-func bindataInCTestasset() (*asset, error) {
+// bindataInCTestAsset reads file data from disk. It returns an error on failure.
+func bindataInCTestAssetBytes() ([]byte, error) {
+	asset, err := bindataInCTestAsset()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
+func bindataInCTestAsset() (*asset, error) {
 	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/c/test.asset"
 	name := "in/c/test.asset"
 	bytes, err := bindataRead(path, name)
@@ -85,6 +109,14 @@ func bindataInCTestasset() (*asset, error) {
 }
 
 // bindataInFilename reads file data from disk. It returns an error on failure.
+func bindataInFilenameBytes() ([]byte, error) {
+	asset, err := bindataInFilename()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
 func bindataInFilename() (*asset, error) {
 	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/file name"
 	name := "in/file name"
@@ -102,8 +134,16 @@ func bindataInFilename() (*asset, error) {
 	return a, err
 }
 
-// bindataInTestasset reads file data from disk. It returns an error on failure.
-func bindataInTestasset() (*asset, error) {
+// bindataInTestAsset reads file data from disk. It returns an error on failure.
+func bindataInTestAssetBytes() ([]byte, error) {
+	asset, err := bindataInTestAsset()
+	if asset == nil {
+		return nil, err
+	}
+	return asset.bytes, err
+}
+
+func bindataInTestAsset() (*asset, error) {
 	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/test.asset"
 	name := "in/test.asset"
 	bytes, err := bindataRead(path, name)
@@ -184,11 +224,11 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 //
 var _bindata = map[string]func() (*asset, error){
-	"in/a/test.asset": bindataInATestasset,
-	"in/b/test.asset": bindataInBTestasset,
-	"in/c/test.asset": bindataInCTestasset,
+	"in/a/test.asset": bindataInATestAsset,
+	"in/b/test.asset": bindataInBTestAsset,
+	"in/c/test.asset": bindataInCTestAsset,
 	"in/file name":    bindataInFilename,
-	"in/test.asset":   bindataInTestasset,
+	"in/test.asset":   bindataInTestAsset,
 }
 
 //
@@ -245,16 +285,16 @@ type bintree struct {
 var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 	"in": {Func: nil, Children: map[string]*bintree{
 		"a": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInATestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInATestAsset, Children: map[string]*bintree{}},
 		}},
 		"b": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInBTestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInBTestAsset, Children: map[string]*bintree{}},
 		}},
 		"c": {Func: nil, Children: map[string]*bintree{
-			"test.asset": {Func: bindataInCTestasset, Children: map[string]*bintree{}},
+			"test.asset": {Func: bindataInCTestAsset, Children: map[string]*bintree{}},
 		}},
 		"file name": {Func: bindataInFilename, Children: map[string]*bintree{}},
-		"test.asset": {Func: bindataInTestasset, Children: map[string]*bintree{}},
+		"test.asset": {Func: bindataInTestAsset, Children: map[string]*bintree{}},
 	}},
 }}
 

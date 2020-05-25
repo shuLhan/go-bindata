@@ -17,8 +17,9 @@ import (
 
 func main() {
 	cfg := &bindata.Config{
-		Package: "bindata",
-		Prefix:  regexp.MustCompile(".*/testdata/"),
+		Package:     "bindata",
+		AssetPrefix: bindata.DefAssetPrefixName,
+		Prefix:      regexp.MustCompile(".*/testdata/"),
 		Ignore: []*regexp.Regexp{
 			regexp.MustCompile("split/"),
 		},
