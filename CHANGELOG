@@ -1,3 +1,20 @@
+# v3.6.0 (2020-07-16)
+
+##  New features
+
+*  Add the ability to configure the asset prefix so it can be exported
+
+By default, the asset function is not exported.  This changes add option to
+set the function prefix with `assetprefix` option, so one can make them
+exported.
+
+##  Bug fixes
+
+* Fix the default value for cfg.Split
+
+* test: provide a modtime for each test case
+
+
 # v3.5.2 (2020-05-03)
 
 ##  Bug fixes
