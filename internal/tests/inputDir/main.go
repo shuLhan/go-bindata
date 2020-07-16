@@ -20,6 +20,7 @@ func main() {
 		Package:     "bindata",
 		Prefix:      regexp.MustCompile(".*/testdata/"),
 		AssetPrefix: bindata.DefAssetPrefixName,
+		ModTime:     1586263518,
 		Input: []bindata.InputConfig{
 			bindata.CreateInputConfig("../../../testdata/in"),
 		},
