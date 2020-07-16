@@ -109,7 +109,7 @@ func initArgs() {
 	flag.BoolVar(&cfg.NoCompress, "nocompress", cfg.NoCompress, "Assets will *not* be GZIP compressed when this flag is specified.")
 	flag.BoolVar(&cfg.NoMemCopy, "nomemcopy", cfg.NoMemCopy, "Use a .rodata hack to get rid of unnecessary memcopies. Refer to the documentation to see what implications this carries.")
 	flag.BoolVar(&cfg.NoMetadata, "nometadata", cfg.NoMetadata, "Assets will not preserve size, mode, and modtime info.")
-	flag.BoolVar(&cfg.Split, "split", cfg.NoMetadata, "Split output into several files, avoiding to have a big output file.")
+	flag.BoolVar(&cfg.Split, "split", cfg.Split, "Split output into several files, avoiding to have a big output file.")
 	flag.BoolVar(&cfg.Verbose, "verbose", cfg.Verbose, "Print the name of file as they are being processed.")
 	flag.Int64Var(&cfg.ModTime, "modtime", cfg.ModTime, "Optional modification unix timestamp override for all files.")
 	flag.StringVar(&argPrefix, "prefix", "", "Optional path prefix to strip off asset names.")
