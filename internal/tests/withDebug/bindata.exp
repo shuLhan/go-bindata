@@ -40,7 +40,7 @@ func bindataInATestAssetBytes() ([]byte, error) {
 }
 
 func bindataInATestAsset() (*asset, error) {
-	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/a/test.asset"
+	path := "PATH_PREFIX_PLACEHOLDER/testdata/in/a/test.asset"
 	name := "in/a/test.asset"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -66,7 +66,7 @@ func bindataInBTestAssetBytes() ([]byte, error) {
 }
 
 func bindataInBTestAsset() (*asset, error) {
-	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/b/test.asset"
+	path := "PATH_PREFIX_PLACEHOLDER/testdata/in/b/test.asset"
 	name := "in/b/test.asset"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -92,7 +92,7 @@ func bindataInCTestAssetBytes() ([]byte, error) {
 }
 
 func bindataInCTestAsset() (*asset, error) {
-	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/c/test.asset"
+	path := "PATH_PREFIX_PLACEHOLDER/testdata/in/c/test.asset"
 	name := "in/c/test.asset"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -118,7 +118,7 @@ func bindataInFilenameBytes() ([]byte, error) {
 }
 
 func bindataInFilename() (*asset, error) {
-	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/file name"
+	path := "PATH_PREFIX_PLACEHOLDER/testdata/in/file name"
 	name := "in/file name"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
@@ -144,7 +144,7 @@ func bindataInTestAssetBytes() ([]byte, error) {
 }
 
 func bindataInTestAsset() (*asset, error) {
-	path := "/Users/tokenomy/go/src/github.com/shuLhan/go-bindata/testdata/in/test.asset"
+	path := "PATH_PREFIX_PLACEHOLDER/testdata/in/test.asset"
 	name := "in/test.asset"
 	bytes, err := bindataRead(path, name)
 	if err != nil {

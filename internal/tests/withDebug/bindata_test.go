@@ -7,6 +7,9 @@ package bindata
 import (
 	"bytes"
 	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -75,17 +78,32 @@ func TestGeneratedContent(t *testing.T) {
 	expFile := "bindata.exp"
 	gotFile := "bindata.go"
 
-	// Compare the generate bindata.go with expected.
+	pathPrefix, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// remove the suffix "/internal/tests/withDebug"
+	for i := 0; i < 3; i++ {
+		pathPrefix = filepath.Dir(pathPrefix)
+	}
+
 	exp, err := ioutil.ReadFile(expFile)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// replace "PATH_PREFIX_PLACEHOLDER" with the real path prefix
+	expStr := string(exp)
+	expStr = strings.ReplaceAll(expStr, "PATH_PREFIX_PLACEHOLDER", pathPrefix)
+	exp = []byte(expStr)
 
 	got, err := ioutil.ReadFile(gotFile)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	// Compare the generate bindata.go with expected.
 	if !bytes.Equal(exp, got) {
 		t.Fatalf("%s not match with %s", expFile, gotFile)
 	}
