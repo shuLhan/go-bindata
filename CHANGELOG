@@ -12,6 +12,15 @@ users that still use GOPATH, and new user that want to use Go modules should
 import "github.com/shuLhan/go-bindata/v4".
 
 
+# v3.6.1 (2020-08-30)
+
+Remove the go.mod from root repository.
+
+After we add go.mod, the latest release version listed on pkg.go.dev
+is v3.4.0 and version after that seems get rejected because Semantic
+Import Versioning rules.
+
+
 # v3.6.0 (2020-07-16)
 
 ##  New features
