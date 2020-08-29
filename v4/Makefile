@@ -39,14 +39,10 @@ all: build
 ##
 
 clean:
-	@echo ">>> Clean ..."
 	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TEST_LIB)
-	@echo ">>> Clean v4 ..."
-	$(MAKE) -C v4 clean
 
 distclean: clean
 	go clean -i ./...
-	$(MAKE) -C v4 distclean
 
 ##
 ## TEST
@@ -64,7 +60,6 @@ $(TEST_COVER_HTML): $(TEST_COVER_OUT)
 	@go tool cover -html=$< -o $@
 
 test: $(TEST_COVER_HTML)
-	$(MAKE) -C v4 test
 
 ##
 ## BUILD
@@ -72,4 +67,3 @@ test: $(TEST_COVER_HTML)
 
 build: test
 	go build ./...
-	$(MAKE) -C v4 build

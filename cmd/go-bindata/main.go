@@ -18,8 +18,8 @@ import (
 
 const (
 	appName         = "go-bindata"
-	appVersionMajor = 3
-	appVersionMinor = 5
+	appVersionMajor = 4
+	appVersionMinor = 0
 )
 
 var (
@@ -83,7 +83,7 @@ func usage() {
 
 func version() {
 	if len(AppVersionRev) == 0 {
-		AppVersionRev = "2"
+		AppVersionRev = "0"
 	}
 
 	lout.Printf("%s %d.%d.%s (Go runtime %s).\n", appName, appVersionMajor,

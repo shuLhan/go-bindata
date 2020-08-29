@@ -1,3 +1,17 @@
+# v4.0.0 (2020-08-30)
+
+This release fix the Go module path, following the best practice as described
+in https://blog.golang.org/v2-go-modules.
+
+The previous go.mod in the root directory was invalid, because we have version
+v3.x.x tags long before we add the Go modules which make the "go get" command
+can not fetch version greater than v3.4.0.
+
+The root directory will be keep for backward compatibility, to be consumed by
+users that still use GOPATH, and new user that want to use Go modules should
+import "github.com/shuLhan/go-bindata/v4".
+
+
 # v3.6.0 (2020-07-16)
 
 ##  New features
