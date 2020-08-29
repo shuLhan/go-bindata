@@ -6,8 +6,8 @@
 
 CMD_DIR       :=./cmd/go-bindata
 
-SRC           :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .GoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
-SRC_TEST      :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .TestGoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
+SRC           :=$(shell GO111MODULE=on go list -f '{{ $$dir := .Dir }}{{ range .GoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
+SRC_TEST      :=$(shell GO111MODULE=on go list -f '{{ $$dir := .Dir }}{{ range .TestGoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
 
 TEST_COVER_OUT    :=cover.out
 TEST_COVER_HTML   :=cover.html
@@ -41,6 +41,7 @@ all: build
 clean:
 	rm -rf $(TEST_COVER_OUT) $(TEST_COVER_HTML) $(TEST_LIB)
 
+distclean: GO111MODULE=on
 distclean: clean
 	go clean -i ./...
 
@@ -48,22 +49,27 @@ distclean: clean
 ## TEST
 ##
 
+%/bindata.go: GO111MODULE=on
 %/bindata.go: %/main.go %/bindata_test.go $(LIB_SRC)
 	go generate $<
 
+$(TEST_COVER_OUT): GO111MODULE=on
 $(TEST_COVER_OUT): $(SRC) $(SRC_TEST) $(TEST_LIB)
 	@echo ">>> Testing ..."
 	go test -coverprofile=$@ ./...
 
+$(TEST_COVER_HTML): GO111MODULE=on
 $(TEST_COVER_HTML): $(TEST_COVER_OUT)
 	@echo ">>> Generate HTML coverage '$@' ..."
-	@go tool cover -html=$< -o $@
+	go tool cover -html=$< -o $@
 
+test: GO111MODULE=on
 test: $(TEST_COVER_HTML)
 
 ##
 ## BUILD
 ##
 
+build: GO111MODULE=on
 build: test
 	go build ./...

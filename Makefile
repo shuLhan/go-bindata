@@ -6,8 +6,8 @@
 
 CMD_DIR       :=./cmd/go-bindata
 
-SRC           :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .GoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
-SRC_TEST      :=$(shell go list -f '{{ $$dir := .Dir }}{{ range .TestGoFiles }} {{ $$dir }}/{{.}} {{end}}' ./...)
+SRC           :=$(shell GO111MODULE=off go list -f '{{ $$dir := .Dir }}{{ range .GoFiles }} {{ $$dir }}/{{.}} {{end}}' . ./internal/...)
+SRC_TEST      :=$(shell GO111MODULE=off go list -f '{{ $$dir := .Dir }}{{ range .TestGoFiles }} {{ $$dir }}/{{.}} {{end}}' . ./internal/...)
 
 TEST_COVER_OUT    :=cover.out
 TEST_COVER_HTML   :=cover.html
@@ -44,6 +44,7 @@ clean:
 	@echo ">>> Clean v4 ..."
 	$(MAKE) -C v4 clean
 
+distclean: GO111MODULE=off
 distclean: clean
 	go clean -i ./...
 	$(MAKE) -C v4 distclean
@@ -52,17 +53,21 @@ distclean: clean
 ## TEST
 ##
 
+%/bindata.go: GO111MODULE=off
 %/bindata.go: %/main.go %/bindata_test.go $(LIB_SRC)
 	go generate $<
 
+$(TEST_COVER_OUT): GO111MODULE=off
 $(TEST_COVER_OUT): $(SRC) $(SRC_TEST) $(TEST_LIB)
 	@echo ">>> Testing ..."
-	go test -coverprofile=$@ ./...
+	go test -coverprofile=$@ . ./internal/...
 
+$(TEST_COVER_HTML): GO111MODULE=off
 $(TEST_COVER_HTML): $(TEST_COVER_OUT)
 	@echo ">>> Generate HTML coverage '$@' ..."
-	@go tool cover -html=$< -o $@
+	go tool cover -html=$< -o $@
 
+test: GO111MODULE=off
 test: $(TEST_COVER_HTML)
 	$(MAKE) -C v4 test
 
@@ -70,6 +75,7 @@ test: $(TEST_COVER_HTML)
 ## BUILD
 ##
 
+build: GO111MODULE=off
 build: test
 	go build ./...
 	$(MAKE) -C v4 build
