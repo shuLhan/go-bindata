@@ -76,7 +76,7 @@ func main() {
 }
 
 func usage() {
-	lerr.Println("Usage: " + appName + " [options] <input directories>\n")
+	lerr.Printf("Usage: " + appName + " [options] <input directories>\n\n")
 
 	flag.PrintDefaults()
 }

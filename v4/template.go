@@ -73,7 +73,7 @@ func Asset(name string) ([]byte, error) {
 	if f, ok := _bindata[cannonicalName]; ok {
 		a, err := f()
 		if err != nil {
-			return nil, fmt.Errorf("Asset %s can't read by error: %v", name, err)
+			return nil, fmt.Errorf("Asset", name, "can't read by error:", err)
 		}
 		return a.bytes, nil
 	}
@@ -103,7 +103,7 @@ func AssetInfo(name string) (os.FileInfo, error) {
 	if f, ok := _bindata[cannonicalName]; ok {
 		a, err := f()
 		if err != nil {
-			return nil, fmt.Errorf("AssetInfo %s can't read by error: %v", name, err)
+			return nil, fmt.Errorf("AssetInfo", name, "can't read by error:", err)
 		}
 		return a.info, nil
 	}

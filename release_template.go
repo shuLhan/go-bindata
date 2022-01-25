@@ -28,7 +28,7 @@ import (
 func bindataRead(data, name string) ([]byte, error) {
 	gz, err := gzip.NewReader(strings.NewReader(data))
 	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
+		return nil, fmt.Errorf("Read", name, ":", err)
 	}
 
 	var buf bytes.Buffer
@@ -36,7 +36,7 @@ func bindataRead(data, name string) ([]byte, error) {
 	clErr := gz.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
+		return nil, fmt.Errorf("Read", name, ":", err)
 	}
 	if clErr != nil {
 		return nil, err
@@ -63,7 +63,7 @@ import (
 func bindataRead(data []byte, name string) ([]byte, error) {
 	gz, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
+		return nil, fmt.Errorf("Read", name, ":", err)
 	}
 
 	var buf bytes.Buffer
@@ -71,7 +71,7 @@ func bindataRead(data []byte, name string) ([]byte, error) {
 	clErr := gz.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("Read %q: %v", name, err)
+		return nil, fmt.Errorf("Read", name, ":", err)
 	}
 	if clErr != nil {
 		return nil, err
