@@ -18,6 +18,9 @@ To install the library and command line program, use the following:
 
 	go get -u github.com/shuLhan/go-bindata/...
 
+For Go 1.13 and beyond that use Go module,
+
+	go install github.com/shuLhan/go-bindata/v4/cmd/go-bindata
 
 ### Usage
 
