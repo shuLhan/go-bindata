@@ -10,9 +10,7 @@ import (
 	"unicode"
 )
 
-//
 // asset holds information about a single asset to be processed.
-//
 type asset struct {
 	// path contains full file path.
 	path string
@@ -47,10 +45,8 @@ func normalize(in string) (out string) {
 	return out
 }
 
-//
 // newAsset will create, initialize, and return new asset based on file
 // path or real path if its symlink.
-//
 func newAsset(cfg *Config, path, name, realPath string, fi os.FileInfo) (ast *asset) {
 	ast = &asset{
 		path: path,

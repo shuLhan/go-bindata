@@ -55,7 +55,7 @@ type Config struct {
 	Output string
 
 	// This defines the string that is prepended to asset functions.
-	// This can be used to export these functions directly. 
+	// This can be used to export these functions directly.
 	AssetPrefix string
 
 	// Prefix defines a regular expression which should used to strip
@@ -176,9 +176,7 @@ type Config struct {
 	Verbose bool
 }
 
-//
 // NewConfig returns a default configuration struct.
-//
 func NewConfig() *Config {
 	c := new(Config)
 	c.Package = DefPackageName
@@ -214,14 +212,12 @@ func (c *Config) validateInput() (err error) {
 	return nil
 }
 
-//
 // validateOutput will check if output is valid.
 //
 // (1) If output is empty, set the output directory to,
 // (1.1) current working directory if `split` option is used, or
 // (1.2) current working directory with default output file output name.
 // (2) If output is not empty, check the directory and file write status.
-//
 func (c *Config) validateOutput() (err error) {
 	// (1)
 	if len(c.Output) == 0 {
@@ -266,10 +262,8 @@ func (c *Config) validateOutput() (err error) {
 	return fout.Close()
 }
 
-//
 // validate ensures the config has sane values.
 // Part of which means checking if certain file/directory paths exist.
-//
 func (c *Config) validate() (err error) {
 	if len(c.cwd) == 0 {
 		c.cwd, err = os.Getwd()

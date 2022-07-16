@@ -4,7 +4,8 @@
 
 //go:generate go run main.go
 
-//+build ignore
+//go:build ignore
+// +build ignore
 
 package main
 

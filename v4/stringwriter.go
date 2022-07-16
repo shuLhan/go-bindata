@@ -10,9 +10,7 @@ import (
 
 const lowerHex = "0123456789abcdef"
 
-//
 // stringWriter define a writer to write content of file.
-//
 type stringWriter struct {
 	io.Writer
 }

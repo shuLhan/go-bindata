@@ -47,9 +47,7 @@ func writeHeader(bfd io.Writer, c *Config, keys []string, toc map[string]*asset)
 	return nil
 }
 
-//
 // flushAndClose will flush the buffered writer `bfd` and close the file `fd`.
-//
 func flushAndClose(fd io.Closer, bfd *bufio.Writer, errParam error) (err error) {
 	err = errParam
 

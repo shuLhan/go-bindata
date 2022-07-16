@@ -55,10 +55,8 @@ func (root *assetTree) funcOrNil() string {
 	return root.asset.funcName
 }
 
-//
 // getFilenames will return all files sorted, to make output stable between
 // invocations.
-//
 func (root *assetTree) getFilenames() (filenames []string) {
 	filenames = make([]string, len(root.Children))
 	x := 0
@@ -142,9 +140,7 @@ func writeTOCTree(w io.Writer, keys []string, toc map[string]*asset) error {
 	return tree.WriteAsGoMap(w)
 }
 
-//
 // getLongestAssetNameLen will return length of the longest asset name in toc.
-//
 func getLongestAssetNameLen(keys []string) (longest int) {
 	for _, key := range keys {
 		lenName := len(key)

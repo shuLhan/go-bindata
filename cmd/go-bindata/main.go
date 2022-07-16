@@ -94,9 +94,7 @@ func version() {
 	os.Exit(0)
 }
 
-//
 // initArgs will initialize all command line arguments.
-//
 func initArgs() {
 	cfg = bindata.NewConfig()
 
@@ -122,7 +120,6 @@ func initArgs() {
 	flag.Var((*AppendSliceValue)(&argInclude), "include", "Regex pattern to include")
 }
 
-//
 // parseArgs creates a new, filled configuration instance by reading and parsing
 // command line options.
 //
@@ -133,7 +130,6 @@ func initArgs() {
 //
 // If no input directory or one of the command line options are incorrect, it
 // will return error.
-//
 func parseArgs() (err error) {
 	flag.Parse()
 
@@ -216,10 +212,8 @@ func parseInclude() (err error) {
 	return
 }
 
-//
 // parseOutputPkg will change package name to directory of output, only if
 // output flag is set and package flag is not set.
-//
 func parseOutputPkg() {
 	var isPkgSet, isOutputSet bool
 

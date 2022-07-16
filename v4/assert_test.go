@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var (
 	_traces = make([]byte, 1024)
 	lerr    = log.New(os.Stderr, "", 0)
@@ -40,7 +40,7 @@ func printStack() {
 	lerr.Println("!!! ERR " + string(_traces[start:end]))
 }
 
-//nolint: unparam
+// nolint: unparam
 func assert(t *testing.T, exp, got interface{}, equal bool) {
 	if reflect.DeepEqual(exp, got) == equal {
 		return
