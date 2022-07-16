@@ -157,7 +157,7 @@ func getLongestAssetNameLen(keys []string) (longest int) {
 
 // writeTOC writes the table of contents file.
 func writeTOC(w io.Writer, keys []string, toc map[string]*asset) (err error) {
-	_, err = fmt.Fprint(w, tmplFuncAsset)
+	_, err = w.Write([]byte(tmplFuncAsset))
 	if err != nil {
 		return err
 	}

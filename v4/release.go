@@ -47,15 +47,15 @@ func writeRelease(w io.Writer, c *Config, keys []string, toc map[string]*asset) 
 func writeReleaseHeader(w io.Writer, c *Config) (err error) {
 	if c.NoCompress {
 		if c.NoMemCopy {
-			_, err = fmt.Fprint(w, tmplImportNocompressNomemcopy)
+			_, err = w.Write([]byte(tmplImportNocompressNomemcopy))
 		} else {
-			_, err = fmt.Fprint(w, tmplImportNocompressMemcopy)
+			_, err = w.Write([]byte(tmplImportNocompressMemcopy))
 		}
 	} else {
 		if c.NoMemCopy {
-			_, err = fmt.Fprint(w, tmplImportCompressNomemcopy)
+			_, err = w.Write([]byte(tmplImportCompressNomemcopy))
 		} else {
-			_, err = fmt.Fprint(w, tmplImportCompressMemcopy)
+			_, err = w.Write([]byte(tmplImportCompressMemcopy))
 		}
 	}
 	if err != nil {
@@ -102,7 +102,7 @@ func writeReleaseAsset(w io.Writer, c *Config, ast *asset) (err error) {
 	return assetReleaseCommon(w, c, ast)
 }
 
-//nolint: gochecknoglobals
+// nolint: gochecknoglobals
 var (
 	backquote = []byte("`")
 	bom       = []byte("\xEF\xBB\xBF")
